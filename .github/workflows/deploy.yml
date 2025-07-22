@@ -23,19 +23,23 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
             set -e
 
-            # Go to project folder
-            cd ~/mongul-admin-frontend  # Change this to mongul-admin-frontend in admin repo
+            # Go to the project folder
+            cd ~/mongul-admin-frontend
 
-            # Pull latest code
+            # Pull latest changes
             git pull origin master
+
+            # Use Node version manager if needed (optional)
+            # source ~/.nvm/nvm.sh
+            # nvm use 20
 
             # Install dependencies and build
             npm ci
             npm run build
 
-            # Restart PM2 or your static server
+            # Restart PM2 or serve build
             pm2 delete mongul-web-frontend || true
-            pm2 serve build 3000 --name mongul-web-frontend
+            pm2 serve build 3000 --name mongul-web-frontend --spa
           EOF
 
       - name: 🧹 Cleanup SSH Key
