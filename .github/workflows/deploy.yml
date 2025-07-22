@@ -1,0 +1,43 @@
+name: 🚀 Deploy Frontend to EC2
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: ✅ Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup SSH Key
+        run: |
+          echo "${{ secrets.EC2_KEY }}" > key.pem
+          chmod 600 key.pem
+
+      - name: 🚀 Deploy to EC2
+        run: |
+          ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+            set -e
+
+            # Go to project folder
+            cd ~/mongul-admin-frontend  # Change this to mongul-admin-frontend in admin repo
+
+            # Pull latest code
+            git pull origin master
+
+            # Install dependencies and build
+            npm ci
+            npm run build
+
+            # Restart PM2 or your static server
+            pm2 delete mongul-web-frontend || true
+            pm2 serve build 3000 --name mongul-web-frontend
+          EOF
+
+      - name: 🧹 Cleanup SSH Key
+        run: rm -f key.pem
+        if: always()
