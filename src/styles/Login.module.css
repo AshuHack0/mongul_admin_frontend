@@ -145,11 +145,12 @@
   position: relative;
 }
 
-.formControl label {
+.label {
   font-weight: 600;
   color: #333;
   margin-bottom: 0.5rem;
   display: block;
+  font-size: 0.9rem;
 }
 
 .input {
@@ -174,6 +175,33 @@
   color: #999;
 }
 
+/* Country Code Input Styles */
+.countryCodeInput {
+  width: 100%;
+  padding: 1rem;
+  border: 2px solid #e1e5e9;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: center;
+  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  color: #667eea;
+}
+
+.countryCodeInput:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  transform: translateY(-2px);
+}
+
+.countryCodeInput::placeholder {
+  color: #999;
+  font-weight: normal;
+}
+
 .inputIcon {
   position: absolute;
   left: 1rem;
@@ -195,6 +223,107 @@
 
 .passwordToggle:hover {
   color: #667eea;
+}
+
+/* OTP Input Styles */
+.otpContainer {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.otpInput {
+  width: 50px;
+  height: 60px;
+  border: 2px solid #e1e5e9;
+  border-radius: 12px;
+  font-size: 1.5rem;
+  font-weight: 600;
+  text-align: center;
+  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+}
+
+.otpInput:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  transform: translateY(-2px);
+}
+
+.otpInput:not(:placeholder-shown) {
+  border-color: #667eea;
+  background: rgba(102, 126, 234, 0.05);
+}
+
+/* Timer Container */
+.timerContainer {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  padding: 0.5rem;
+  background: rgba(102, 126, 234, 0.05);
+  border-radius: 8px;
+  border-left: 4px solid #667eea;
+}
+
+/* Action Buttons */
+.actionButtons {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.backButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: transparent;
+  border: 2px solid #e1e5e9;
+  border-radius: 12px;
+  color: #666;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.backButton:hover {
+  border-color: #667eea;
+  color: #667eea;
+  transform: translateY(-2px);
+}
+
+.backButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.resendButton {
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(45deg, #667eea, #764ba2);
+  border: none;
+  border-radius: 12px;
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.resendButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+}
+
+.resendButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .submitButton {
@@ -285,6 +414,21 @@
     width: 70px;
     height: 70px;
   }
+
+  .otpContainer {
+    gap: 0.3rem;
+  }
+
+  .otpInput {
+    width: 40px;
+    height: 50px;
+    font-size: 1.2rem;
+  }
+
+  .actionButtons {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
 }
 
 @media (max-width: 480px) {
@@ -300,12 +444,22 @@
     padding: 0.8rem 0.8rem 0.8rem 2.5rem;
   }
   
+  .countryCodeInput {
+    padding: 0.8rem;
+  }
+  
   .inputIcon {
     left: 0.8rem;
   }
   
   .passwordToggle {
     right: 0.8rem;
+  }
+
+  .otpInput {
+    width: 35px;
+    height: 45px;
+    font-size: 1rem;
   }
 }
 

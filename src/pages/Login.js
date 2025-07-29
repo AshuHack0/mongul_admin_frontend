@@ -2,60 +2,74 @@ import React, { useState } from 'react';
 import {
   Box,
   Paper,
-  TextField,
-  Button,
   Typography,
   Container,
   Alert,
-  InputAdornment,
-  IconButton,
-  OutlinedInput,
-  FormControl,
-  InputLabel
+  IconButton
 } from '@mui/material';
-import { Visibility, VisibilityOff, Phone, Lock } from '@mui/icons-material';
+import { Phone } from '@mui/icons-material';
 import styles from '../styles/Login.module.css';
+import { API_ENDPOINTS } from '../config/api';
 
-const Login = ({ onLogin }) => {
+const Login = ({ onSendOTP }) => {
+  const [countryCode, setCountryCode] = useState('+91');
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [otpSent, setOtpSent] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
+    // Validate country code
+    if (!countryCode || !countryCode.startsWith('+')) {
+      setError('Please enter a valid country code starting with +');
+      setLoading(false);
+      return;
+    }
+
     // Validate phone number
-    if (!phoneNumber || phoneNumber.length < 10) {
+    if (!phoneNumber || phoneNumber.length < 6) {
       setError('Please enter a valid phone number');
       setLoading(false);
       return;
     }
 
-    // Validate password
-    if (!password || password.length < 6) {
-      setError('Password must be at least 6 characters');
-      setLoading(false);
-      return;
-    }
+    // Combine country code and phone number
+    const fullPhoneNumber = countryCode + phoneNumber;
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // For demo purposes, accept any valid phone/password combination
-      if (phoneNumber && password) {
-        onLogin({ phoneNumber, password });
+      // Call the backend API to send OTP
+      const response = await fetch(API_ENDPOINTS.SEND_ADMIN_OTP, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ phone: fullPhoneNumber }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setOtpSent(true);
+        onSendOTP(fullPhoneNumber);
       } else {
-        setError('Invalid credentials');
+        setError(data.message || 'Failed to send OTP');
       }
     } catch (err) {
-      setError('Login failed. Please try again.');
+      setError('Network error. Please try again.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleCountryCodeChange = (e) => {
+    const value = e.target.value;
+    // Only allow + and digits
+    if (/^\+?\d*$/.test(value)) {
+      setCountryCode(value);
     }
   };
 
@@ -74,14 +88,14 @@ const Login = ({ onLogin }) => {
         
         <Paper className={styles.loginCard}>
           <Box className={styles.logoContainer}>
-            <Lock sx={{ fontSize: 45, color: 'white' }} />
+            <Phone sx={{ fontSize: 45, color: 'white' }} />
           </Box>
 
           <Typography component="h1" className={styles.title}>
             Admin Login
           </Typography>
           <Typography className={styles.subtitle}>
-            Enter your credentials to access the admin panel
+            Enter your phone number to receive OTP
           </Typography>
 
           {error && (
@@ -92,7 +106,26 @@ const Login = ({ onLogin }) => {
 
           <Box component="form" onSubmit={handleSubmit} className={styles.form}>
             <div className={styles.formControl}>
-              {/* <label htmlFor="phone-number">Phone Number</label> */}
+              <label htmlFor="country-code" className={styles.label}>
+                Country Code
+              </label>
+              <div style={{ position: 'relative' }}>
+                <input
+                  id="country-code"
+                  type="text"
+                  className={styles.countryCodeInput}
+                  value={countryCode}
+                  onChange={handleCountryCodeChange}
+                  placeholder="+91"
+                  maxLength={5}
+                />
+              </div>
+            </div>
+
+            <div className={styles.formControl}>
+              <label htmlFor="phone-number" className={styles.label}>
+                Phone Number
+              </label>
               <div style={{ position: 'relative' }}>
                 <Phone className={styles.inputIcon} />
                 <input
@@ -107,28 +140,6 @@ const Login = ({ onLogin }) => {
               </div>
             </div>
 
-            <div className={styles.formControl}>
-              {/* <label htmlFor="password">Password</label> */}
-              <div style={{ position: 'relative' }}>
-                <Lock className={styles.inputIcon} />
-                <input
-                  id="password"
-                  type={showPassword ? 'text' : 'password'}
-                  className={styles.input}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter your password"
-                />
-                <IconButton
-                  className={styles.passwordToggle}
-                  onClick={() => setShowPassword(!showPassword)}
-                  size="small"
-                >
-                  
-                </IconButton>
-              </div>
-            </div>
-
             <button
               type="submit"
               className={styles.submitButton}
@@ -137,10 +148,10 @@ const Login = ({ onLogin }) => {
               {loading ? (
                 <>
                   <span className={styles.loadingSpinner}></span>
-                  Signing In...
+                  Sending OTP...
                 </>
               ) : (
-                'Sign In'
+                'Send OTP'
               )}
             </button>
           </Box>

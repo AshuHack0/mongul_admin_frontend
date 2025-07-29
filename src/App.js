@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Box, CssBaseline, ThemeProvider, createTheme, Typography } from '@mui/material';
-import Login from './pages/Login';
+import AuthFlow from './pages/AuthFlow';
 import Dashboard from './pages/Dashboard';
 import Mentors from './pages/Mentors';
 import Mentees from './pages/Mentees';
@@ -57,12 +57,15 @@ const AppContent = ({ isAuthenticated, setIsAuthenticated }) => {
     setActiveTab(location.pathname);
   }, [location.pathname]);
 
-  const handleLogin = (credentials) => {
-    console.log('Login successful:', credentials);
+  const handleLoginSuccess = (data) => {
+    console.log('Login successful:', data);
     setIsAuthenticated(true);
   };
 
   const handleLogout = () => {
+    // Clear stored data
+    localStorage.removeItem('adminToken');
+    localStorage.removeItem('adminUser');
     setIsAuthenticated(false);
     setActiveTab('/dashboard');
   };
@@ -72,7 +75,7 @@ const AppContent = ({ isAuthenticated, setIsAuthenticated }) => {
   };
 
   if (!isAuthenticated) {
-    return <Login onLogin={handleLogin} />;
+    return <AuthFlow onLoginSuccess={handleLoginSuccess} />;
   }
 
   return (
@@ -111,6 +114,16 @@ const AppContent = ({ isAuthenticated, setIsAuthenticated }) => {
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  // Check for existing authentication on app load
+  useEffect(() => {
+    const token = localStorage.getItem('adminToken');
+    const user = localStorage.getItem('adminUser');
+    
+    if (token && user) {
+      setIsAuthenticated(true);
+    }
+  }, []);
 
   return (
     <ThemeProvider theme={theme}>

@@ -198,16 +198,7 @@ const Mentees = () => {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12} md={3}>
-              <Button
-                fullWidth
-                variant="outlined"
-                startIcon={<Assignment />}
-                sx={{ height: 56 }}
-              >
-                View Progress
-              </Button>
-            </Grid>
+            
           </Grid>
         </CardContent>
       </Card>
@@ -220,10 +211,8 @@ const Mentees = () => {
               <TableHead>
                 <TableRow sx={{ background: '#f5f5f5' }}>
                   <TableCell sx={{ fontWeight: 600 }}>Mentee</TableCell>
-                  <TableCell sx={{ fontWeight: 600 }}>Program</TableCell>
-                  <TableCell sx={{ fontWeight: 600 }}>Mentor</TableCell>
-                  <TableCell sx={{ fontWeight: 600 }}>Progress</TableCell>
-                  <TableCell sx={{ fontWeight: 600 }}>Level</TableCell>
+                
+                  <TableCell sx={{ fontWeight: 600 }}>Sessions Completed</TableCell>
                   <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
                   <TableCell sx={{ fontWeight: 600 }}>Actions</TableCell>
                 </TableRow>
@@ -251,49 +240,15 @@ const Mentees = () => {
                     </TableCell>
                     <TableCell>
                       <Box>
-                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                          {mentee.program}
-                        </Typography>
+                       
                         <Typography variant="caption" color="textSecondary">
-                          {mentee.sessionsCompleted}/{mentee.totalSessions} sessions
+                          {mentee.sessionsCompleted}  sessions
                         </Typography>
                       </Box>
                     </TableCell>
-                    <TableCell>
-                      <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                        {mentee.mentor}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Box sx={{ minWidth: 120 }}>
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {mentee.progress}%
-                          </Typography>
-                        </Box>
-                        <LinearProgress
-                          variant="determinate"
-                          value={mentee.progress}
-                          sx={{
-                            height: 6,
-                            borderRadius: 3,
-                            backgroundColor: 'rgba(0,0,0,0.1)',
-                            '& .MuiLinearProgress-bar': {
-                              background: mentee.progress > 70 ? '#4caf50' :
-                                         mentee.progress > 40 ? '#ff9800' : '#f44336',
-                              borderRadius: 3,
-                            },
-                          }}
-                        />
-                      </Box>
-                    </TableCell>
-                    <TableCell>
-                      <Chip
-                        label={mentee.level}
-                        color={getLevelColor(mentee.level)}
-                        size="small"
-                      />
-                    </TableCell>
+                  
+                
+                   
                     <TableCell>
                       <Chip
                         icon={getStatusIcon(mentee.status)}

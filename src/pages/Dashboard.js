@@ -40,6 +40,7 @@ import {
   Work,
   Psychology
 } from '@mui/icons-material';
+import styles from '../styles/dashboard.module.css';
 
 const Dashboard = () => {
   const stats = [
@@ -49,8 +50,7 @@ const Dashboard = () => {
       change: '+12%',
       trend: 'up',
       icon: <School />,
-      color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      bgColor: 'rgba(102, 126, 234, 0.1)'
+      color: '#667eea'
     },
     {
       title: 'Active Mentees',
@@ -58,8 +58,7 @@ const Dashboard = () => {
       change: '+8%',
       trend: 'up',
       icon: <People />,
-      color: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-      bgColor: 'rgba(240, 147, 251, 0.1)'
+      color: '#f093fb'
     },
     {
       title: 'Active Sessions',
@@ -67,8 +66,7 @@ const Dashboard = () => {
       change: '+15%',
       trend: 'up',
       icon: <Schedule />,
-      color: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-      bgColor: 'rgba(79, 172, 254, 0.1)'
+      color: '#4facfe'
     },
     {
       title: 'Completion Rate',
@@ -76,8 +74,7 @@ const Dashboard = () => {
       change: '+2.1%',
       trend: 'up',
       icon: <CheckCircle />,
-      color: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
-      bgColor: 'rgba(67, 233, 123, 0.1)'
+      color: '#43e97b'
     }
   ];
 
@@ -189,106 +186,44 @@ const Dashboard = () => {
   };
 
   return (
-    <Box sx={{ 
-      p: { xs: 2, md: 4 }, 
-      background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
-      minHeight: '100vh'
-    }}>
+    <Box className={styles.container}>
       {/* Header Section */}
-      <Box sx={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center', 
-        mb: 4,
-        flexDirection: { xs: 'column', md: 'row' },
-        gap: 2
-      }}>
+      <Box className={styles.header}>
         <Box>
-          <Typography 
-            variant="h3" 
-            sx={{ 
-              fontWeight: 800,
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-              backgroundClip: 'text',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              mb: 1
-            }}
-          >
+          <Typography variant="h3" className={styles.title}>
             Mongul Mentoring Dashboard
           </Typography>
-          <Typography variant="body1" color="text.secondary" sx={{ fontWeight: 500 }}>
+          <Typography variant="body1" className={styles.subtitle}>
             Welcome back! Here's what's happening with your mentoring platform.
           </Typography>
         </Box>
-        
       </Box>
 
       {/* Key Metrics */}
-      <Grid container spacing={3} sx={{ mb: 4 }}>
+      <Grid container spacing={3} className={styles.statsGrid}>
         {stats.map((stat, index) => (
           <Grid item xs={12} sm={6} md={3} key={index}>
-            <Card sx={{ 
-              height: '100%',
-              background: 'rgba(255, 255, 255, 0.9)',
-              backdropFilter: 'blur(10px)',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
-              transition: 'all 0.3s ease',
-              '&:hover': {
-                transform: 'translateY(-4px)',
-                boxShadow: '0 12px 40px rgba(0, 0, 0, 0.15)'
-              }
-            }}>
-              <CardContent sx={{ p: 3 }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                  <Box sx={{ flex: 1 }}>
-                    <Typography 
-                      color="textSecondary" 
-                      gutterBottom 
-                      variant="body2"
-                      sx={{ fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5 }}
-                    >
+            <Card className={styles.statCard}>
+              <CardContent className={styles.statContent}>
+                <Box className={styles.statHeader}>
+                  <Box className={styles.statInfo}>
+                    <Typography variant="body2" className={styles.statTitle}>
                       {stat.title}
                     </Typography>
-                    <Typography 
-                      variant="h3" 
-                      component="div" 
-                      sx={{ 
-                        fontWeight: 800, 
-                        mb: 2,
-                        background: stat.color,
-                        backgroundClip: 'text',
-                        WebkitBackgroundClip: 'text',
-                        WebkitTextFillColor: 'transparent'
-                      }}
-                    >
+                    <Typography variant="h3" className={styles.statValue} style={{ color: stat.color }}>
                       {stat.value}
                     </Typography>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <TrendingUp sx={{ color: '#4caf50', fontSize: 18 }} />
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          color: '#4caf50',
-                          fontWeight: 700,
-                        }}
-                      >
+                    <Box className={styles.statChange}>
+                      <TrendingUp className={styles.trendIcon} />
+                      <Typography variant="body2" className={styles.changeText}>
                         {stat.change}
                       </Typography>
-                      <Typography variant="body2" color="textSecondary" sx={{ fontWeight: 500 }}>
+                      <Typography variant="body2" className={styles.changeLabel}>
                         vs last month
                       </Typography>
                     </Box>
                   </Box>
-                  <Avatar
-                    sx={{
-                      background: stat.color,
-                      width: 64,
-                      height: 64,
-                      boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)'
-                    }}
-                  >
+                  <Avatar className={styles.statAvatar} style={{ background: stat.color }}>
                     {stat.icon}
                   </Avatar>
                 </Box>
@@ -301,76 +236,48 @@ const Dashboard = () => {
       <Grid container spacing={3}>
         {/* Recent Sessions */}
         <Grid item xs={12} lg={6}>
-          <Card sx={{ 
-            height: '100%',
-            background: 'rgba(255, 255, 255, 0.9)',
-            backdropFilter: 'blur(10px)',
-            border: '1px solid rgba(255, 255, 255, 0.2)',
-            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)'
-          }}>
-            <CardContent sx={{ p: 3 }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-                <Typography 
-                  variant="h6" 
-                  sx={{ 
-                    fontWeight: 700, 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    gap: 1,
-                    color: '#2c3e50'
-                  }}
-                >
-                  <Schedule sx={{ color: '#667eea' }} />
+          <Card className={styles.card}>
+            <CardContent className={styles.cardContent}>
+              <Box className={styles.cardHeader}>
+                <Typography variant="h6" className={styles.cardTitle}>
+                  <Schedule className={styles.cardIcon} />
                   Recent Sessions
                 </Typography>
                 <IconButton size="small">
                   <MoreVert />
                 </IconButton>
               </Box>
-              <List sx={{ p: 0 }}>
+              <List className={styles.sessionList}>
                 {recentSessions.map((session, index) => {
                   const statusStyle = getStatusColor(session.status);
                   return (
                     <React.Fragment key={index}>
-                      <ListItem sx={{ px: 0, py: 2 }}>
+                      <ListItem className={styles.sessionItem}>
                         <ListItemAvatar>
-                          <Avatar 
-                            sx={{ 
-                              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                              fontWeight: 600,
-                              boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)'
-                            }}
-                          >
+                          <Avatar className={styles.sessionAvatar}>
                             {session.avatar}
                           </Avatar>
                         </ListItemAvatar>
                         <ListItemText
                           primary={
-                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                              <Typography variant="body1" sx={{ fontWeight: 600, color: '#2c3e50' }}>
+                            <Box className={styles.sessionHeader}>
+                              <Typography variant="body1" className={styles.sessionTitle}>
                                 {session.mentor} → {session.mentee}
                               </Typography>
                               <Chip
                                 label={statusStyle.text}
                                 size="small"
-                                sx={{ 
-                                  backgroundColor: statusStyle.bg,
-                                  color: statusStyle.color,
-                                  fontWeight: 600,
-                                  fontSize: '0.75rem'
-                                }}
+                                className={styles.statusChip}
+                                style={{ backgroundColor: statusStyle.bg, color: statusStyle.color }}
                               />
                             </Box>
                           }
                           secondary={
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
-                              <Typography variant="body2" color="textSecondary" sx={{ fontWeight: 500 }}>
+                            <Box className={styles.sessionDetails}>
+                              <Typography variant="body2" className={styles.programName}>
                                 {session.program}
                               </Typography>
-                              <Typography variant="body2" color="textSecondary">
-                                •
-                              </Typography>
-                              <Typography variant="body2" color="textSecondary">
+                              <Typography variant="body2" className={styles.sessionTime}>
                                 {session.time}
                               </Typography>
                             </Box>
@@ -382,18 +289,8 @@ const Dashboard = () => {
                   );
                 })}
               </List>
-              <Box sx={{ mt: 3, textAlign: 'center' }}>
-                <Button 
-                  variant="text" 
-                  endIcon={<ArrowForward />}
-                  sx={{ 
-                    color: '#667eea',
-                    fontWeight: 600,
-                    '&:hover': {
-                      backgroundColor: 'rgba(102, 126, 234, 0.04)'
-                    }
-                  }}
-                >
+              <Box className={styles.viewAllButton}>
+                <Button variant="text" endIcon={<ArrowForward />} className={styles.viewButton}>
                   View All Sessions
                 </Button>
               </Box>
@@ -403,69 +300,44 @@ const Dashboard = () => {
 
         {/* Top Mentors */}
         <Grid item xs={12} lg={6}>
-          <Card sx={{ 
-            height: '100%',
-            background: 'rgba(255, 255, 255, 0.9)',
-            backdropFilter: 'blur(10px)',
-            border: '1px solid rgba(255, 255, 255, 0.2)',
-            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)'
-          }}>
-            <CardContent sx={{ p: 3 }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-                <Typography 
-                  variant="h6" 
-                  sx={{ 
-                    fontWeight: 700, 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    gap: 1,
-                    color: '#2c3e50'
-                  }}
-                >
-                  <Star sx={{ color: '#ffc107' }} />
+          <Card className={styles.card}>
+            <CardContent className={styles.cardContent}>
+              <Box className={styles.cardHeader}>
+                <Typography variant="h6" className={styles.cardTitle}>
+                  <Star className={styles.cardIcon} />
                   Top Performing Mentors
                 </Typography>
                 <IconButton size="small">
                   <MoreVert />
                 </IconButton>
               </Box>
-              <List sx={{ p: 0 }}>
+              <List className={styles.mentorList}>
                 {topMentors.map((mentor, index) => (
                   <React.Fragment key={index}>
-                    <ListItem sx={{ px: 0, py: 2 }}>
+                    <ListItem className={styles.mentorItem}>
                       <ListItemAvatar>
-                        <Avatar 
-                          sx={{ 
-                            background: index === 0 ? 'linear-gradient(135deg, #ffd700 0%, #ffed4e 100%)' :
-                                   index === 1 ? 'linear-gradient(135deg, #c0c0c0 0%, #e5e5e5 100%)' :
-                                   index === 2 ? 'linear-gradient(135deg, #cd7f32 0%, #daa520 100%)' :
-                                   'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                            fontWeight: 700,
-                            fontSize: '0.9rem',
-                            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)'
-                          }}
-                        >
+                        <Avatar className={`${styles.mentorAvatar} ${styles[`rank${index + 1}`]}`}>
                           {index + 1}
                         </Avatar>
                       </ListItemAvatar>
                       <ListItemText
                         primary={
-                          <Typography variant="body1" sx={{ fontWeight: 600, color: '#2c3e50' }}>
+                          <Typography variant="body1" className={styles.mentorName}>
                             {mentor.name}
                           </Typography>
                         }
                         secondary={
-                          <Box>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-                              <Star sx={{ color: '#ffc107', fontSize: 18 }} />
-                              <Typography variant="body2" sx={{ fontWeight: 700, color: '#2c3e50' }}>
+                          <Box className={styles.mentorDetails}>
+                            <Box className={styles.mentorRating}>
+                              <Star className={styles.starIcon} />
+                              <Typography variant="body2" className={styles.ratingText}>
                                 {mentor.rating}
                               </Typography>
-                              <Typography variant="body2" color="textSecondary" sx={{ fontWeight: 500 }}>
+                              <Typography variant="body2" className={styles.specialty}>
                                 • {mentor.specialty}
                               </Typography>
                             </Box>
-                            <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 500 }}>
+                            <Typography variant="caption" className={styles.mentorStats}>
                               {mentor.sessions} sessions • {mentor.mentees} mentees
                             </Typography>
                           </Box>
@@ -476,18 +348,8 @@ const Dashboard = () => {
                   </React.Fragment>
                 ))}
               </List>
-              <Box sx={{ mt: 3, textAlign: 'center' }}>
-                <Button 
-                  variant="text" 
-                  endIcon={<ArrowForward />}
-                  sx={{ 
-                    color: '#667eea',
-                    fontWeight: 600,
-                    '&:hover': {
-                      backgroundColor: 'rgba(102, 126, 234, 0.04)'
-                    }
-                  }}
-                >
+              <Box className={styles.viewAllButton}>
+                <Button variant="text" endIcon={<ArrowForward />} className={styles.viewButton}>
                   View All Mentors
                 </Button>
               </Box>
@@ -497,37 +359,23 @@ const Dashboard = () => {
 
         {/* Aspiring Mentors Section */}
         <Grid item xs={12}>
-          <Card sx={{ 
-            background: 'rgba(255, 255, 255, 0.9)',
-            backdropFilter: 'blur(10px)',
-            border: '1px solid rgba(255, 255, 255, 0.2)',
-            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)'
-          }}>
-            <CardContent sx={{ p: 3 }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
-                <Typography 
-                  variant="h6" 
-                  sx={{ 
-                    fontWeight: 700, 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    gap: 1,
-                    color: '#2c3e50'
-                  }}
-                >
-                  <PersonAdd sx={{ color: '#667eea' }} />
+          <Card className={styles.card}>
+            <CardContent className={styles.cardContent}>
+              <Box className={styles.cardHeader}>
+                <Typography variant="h6" className={styles.cardTitle}>
+                  <PersonAdd className={styles.cardIcon} />
                   Aspiring Mentors
                 </Typography>
-                <Box sx={{ display: 'flex', gap: 1 }}>
+                <Box className={styles.statusChips}>
                   <Chip 
                     label={`${aspiringMentors.filter(m => m.status === 'approved').length} Approved`}
                     size="small"
-                    sx={{ backgroundColor: '#e8f5e8', color: '#2e7d32', fontWeight: 600 }}
+                    className={styles.approvedChip}
                   />
                   <Chip 
                     label={`${aspiringMentors.filter(m => m.status === 'review').length} Under Review`}
                     size="small"
-                    sx={{ backgroundColor: '#fff3e0', color: '#f57c00', fontWeight: 600 }}
+                    className={styles.reviewChip}
                   />
                   <IconButton size="small">
                     <MoreVert />
@@ -540,113 +388,79 @@ const Dashboard = () => {
                   const statusStyle = getApplicationStatus(mentor.status);
                   return (
                     <Grid item xs={12} md={6} lg={4} key={index}>
-                      <Card sx={{ 
-                        background: 'rgba(255, 255, 255, 0.7)',
-                        border: '1px solid rgba(255, 255, 255, 0.3)',
-                        transition: 'all 0.3s ease',
-                        '&:hover': {
-                          transform: 'translateY(-2px)',
-                          boxShadow: '0 8px 25px rgba(0, 0, 0, 0.1)'
-                        }
-                      }}>
-                        <CardContent sx={{ p: 2.5 }}>
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                      <Card className={styles.mentorCard}>
+                        <CardContent className={styles.mentorCardContent}>
+                          <Box className={styles.mentorCardHeader}>
                             <Badge
                               overlap="circular"
                               anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
                               badgeContent={
-                                <Avatar sx={{ width: 20, height: 20, fontSize: '0.7rem', background: statusStyle.color }}>
+                                <Avatar className={styles.statusBadge} style={{ background: statusStyle.color }}>
                                   {statusStyle.icon}
                                 </Avatar>
                               }
                             >
-                              <Avatar 
-                                sx={{ 
-                                  width: 56, 
-                                  height: 56,
-                                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                                  fontWeight: 600,
-                                  fontSize: '1.2rem'
-                                }}
-                              >
+                              <Avatar className={styles.mentorCardAvatar}>
                                 {mentor.avatar}
                               </Avatar>
                             </Badge>
-                            <Box sx={{ flex: 1 }}>
-                              <Typography variant="h6" sx={{ fontWeight: 700, color: '#2c3e50', mb: 0.5 }}>
+                            <Box className={styles.mentorCardInfo}>
+                              <Typography variant="h6" className={styles.mentorCardName}>
                                 {mentor.name}
                               </Typography>
-                              <Typography variant="body2" color="textSecondary" sx={{ fontWeight: 500 }}>
+                              <Typography variant="body2" className={styles.mentorCardRole}>
                                 {mentor.currentRole}
                               </Typography>
                             </Box>
                           </Box>
 
-                          <Box sx={{ mb: 2 }}>
-                            <Typography variant="body2" sx={{ fontWeight: 600, color: '#2c3e50', mb: 1 }}>
+                          <Box className={styles.mentorCardDetails}>
+                            <Typography variant="body2" className={styles.targetSpecialty}>
                               Target Specialty: {mentor.targetSpecialty}
                             </Typography>
-                            <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 500 }}>
+                            <Typography variant="caption" className={styles.experience}>
                               {mentor.experience} experience • {mentor.sessionsCompleted} sessions completed
                             </Typography>
                           </Box>
 
-                          <Box sx={{ mb: 2 }}>
-                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                              <Typography variant="body2" sx={{ fontWeight: 600, color: '#2c3e50' }}>
+                          <Box className={styles.progressSection}>
+                            <Box className={styles.progressHeader}>
+                              <Typography variant="body2" className={styles.progressLabel}>
                                 Progress
                               </Typography>
-                              <Typography variant="body2" sx={{ fontWeight: 700, color: '#667eea' }}>
+                              <Typography variant="body2" className={styles.progressValue}>
                                 {mentor.progress}%
                               </Typography>
                             </Box>
                             <LinearProgress
                               variant="determinate"
                               value={mentor.progress}
-                              sx={{
-                                height: 8,
-                                borderRadius: 4,
-                                backgroundColor: 'rgba(0,0,0,0.08)',
-                                '& .MuiLinearProgress-bar': {
-                                  background: 'linear-gradient(90deg, #667eea 0%, #764ba2 100%)',
-                                  borderRadius: 4,
-                                },
-                              }}
+                              className={styles.progressBar}
                             />
                           </Box>
 
-                          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 2 }}>
+                          <Box className={styles.skillsSection}>
                             {mentor.skills.slice(0, 3).map((skill, skillIndex) => (
                               <Chip
                                 key={skillIndex}
                                 label={skill}
                                 size="small"
-                                sx={{ 
-                                  fontSize: '0.7rem',
-                                  backgroundColor: 'rgba(102, 126, 234, 0.1)',
-                                  color: '#667eea',
-                                  fontWeight: 500
-                                }}
+                                className={styles.skillChip}
                               />
                             ))}
                             {mentor.skills.length > 3 && (
                               <Chip
                                 label={`+${mentor.skills.length - 3}`}
                                 size="small"
-                                sx={{ 
-                                  fontSize: '0.7rem',
-                                  backgroundColor: 'rgba(0,0,0,0.1)',
-                                  color: 'text.secondary',
-                                  fontWeight: 500
-                                }}
+                                className={styles.moreSkillsChip}
                               />
                             )}
                           </Box>
 
-                          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                              <Star sx={{ color: '#ffc107', fontSize: 16 }} />
-                              <Typography variant="body2" sx={{ fontWeight: 600, color: '#2c3e50' }}>
+                          <Box className={styles.mentorCardFooter}>
+                            <Box className={styles.ratingSection}>
+                              <Star className={styles.ratingStar} />
+                              <Typography variant="body2" className={styles.ratingValue}>
                                 {mentor.rating}
                               </Typography>
                             </Box>
@@ -654,12 +468,8 @@ const Dashboard = () => {
                               label={statusStyle.text}
                               size="small"
                               icon={statusStyle.icon}
-                              sx={{ 
-                                backgroundColor: statusStyle.bg,
-                                color: statusStyle.color,
-                                fontWeight: 600,
-                                fontSize: '0.7rem'
-                              }}
+                              className={styles.statusChip}
+                              style={{ backgroundColor: statusStyle.bg, color: statusStyle.color }}
                             />
                           </Box>
                         </CardContent>
@@ -669,18 +479,11 @@ const Dashboard = () => {
                 })}
               </Grid>
 
-              <Box sx={{ mt: 4, textAlign: 'center' }}>
+              <Box className={styles.reviewButton}>
                 <Button 
                   variant="contained"
                   startIcon={<PersonAdd />}
-                  sx={{ 
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                    boxShadow: '0 4px 15px rgba(102, 126, 234, 0.3)',
-                    '&:hover': {
-                      background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
-                      boxShadow: '0 6px 20px rgba(102, 126, 234, 0.4)'
-                    }
-                  }}
+                  className={styles.reviewAllButton}
                 >
                   Review All Applications
                 </Button>
@@ -690,85 +493,7 @@ const Dashboard = () => {
         </Grid>
 
         {/* Program Progress */}
-        <Grid item xs={12}>
-          <Card sx={{ 
-            background: 'rgba(255, 255, 255, 0.9)',
-            backdropFilter: 'blur(10px)',
-            border: '1px solid rgba(255, 255, 255, 0.2)',
-            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)'
-          }}>
-            <CardContent sx={{ p: 3 }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
-                <Typography 
-                  variant="h6" 
-                  sx={{ 
-                    fontWeight: 700, 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    gap: 1,
-                    color: '#2c3e50'
-                  }}
-                >
-                  <Assignment sx={{ color: '#667eea' }} />
-                  Program Progress Overview
-                </Typography>
-                <IconButton size="small">
-                  <MoreVert />
-                </IconButton>
-              </Box>
-              <Grid container spacing={4}>
-                {programProgress.map((program, index) => (
-                  <Grid item xs={12} sm={6} md={3} key={index}>
-                    <Box sx={{ 
-                      p: 2, 
-                      borderRadius: 2,
-                      background: 'rgba(255, 255, 255, 0.5)',
-                      border: '1px solid rgba(255, 255, 255, 0.3)'
-                    }}>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                        <Typography variant="body1" sx={{ fontWeight: 700, color: '#2c3e50' }}>
-                          {program.name}
-                        </Typography>
-                        <Typography 
-                          variant="h6" 
-                          sx={{ 
-                            fontWeight: 800,
-                            color: program.color
-                          }}
-                        >
-                          {program.progress}%
-                        </Typography>
-                      </Box>
-                      <LinearProgress
-                        variant="determinate"
-                        value={program.progress}
-                        sx={{
-                          height: 10,
-                          borderRadius: 5,
-                          backgroundColor: 'rgba(0,0,0,0.08)',
-                          mb: 2,
-                          '& .MuiLinearProgress-bar': {
-                            background: `linear-gradient(90deg, ${program.color} 0%, ${program.color}dd 100%)`,
-                            borderRadius: 5,
-                            boxShadow: `0 2px 8px ${program.color}40`
-                          },
-                        }}
-                      />
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 600 }}>
-                          {program.enrolled} enrolled
-                        </Typography>
-                        <Typography variant="caption" color="textSecondary" sx={{ fontWeight: 600 }}>
-                          {program.completed} completed
-                        </Typography>
-                      </Box>
-                    </Box>
-                  </Grid>
-                ))}
-              </Grid>
-            </CardContent>
-          </Card>
-        </Grid>
+         
       </Grid>
     </Box>
   );
