@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Typography,
@@ -17,7 +17,11 @@ import {
   Paper,
   IconButton,
   Tooltip,
-  Badge
+  Badge,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions
 } from '@mui/material';
 import {
   People,
@@ -38,11 +42,104 @@ import {
   PersonAdd,
   Grade,
   Work,
-  Psychology
+  Psychology,
+  Computer,
+  Smartphone
 } from '@mui/icons-material';
 import styles from '../styles/dashboard.module.css';
 
 const Dashboard = () => {
+  const [isMobile, setIsMobile] = useState(false);
+  const [showMobileDialog, setShowMobileDialog] = useState(false);
+
+  // Check if user is on mobile device
+  useEffect(() => {
+    const checkMobile = () => {
+      const userAgent = navigator.userAgent.toLowerCase();
+      const isMobileDevice = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent);
+      const isSmallScreen = window.innerWidth <= 768;
+      
+      if (isMobileDevice || isSmallScreen) {
+        setIsMobile(true);
+        setShowMobileDialog(true);
+      }
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  const handleCloseMobileDialog = () => {
+    setShowMobileDialog(false);
+  };
+
+  // Mobile warning dialog
+  if (isMobile) {
+    return (
+      <Dialog 
+        open={showMobileDialog} 
+        onClose={handleCloseMobileDialog}
+        maxWidth="sm"
+        fullWidth
+        className={styles.mobileDialog}
+      >
+        <DialogTitle className={styles.mobileDialogTitle}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+            <Computer sx={{ fontSize: 40, color: '#667eea' }} />
+            <Smartphone sx={{ fontSize: 40, color: '#f093fb' }} />
+          </Box>
+          <Typography variant="h5" sx={{ fontWeight: 700, color: '#2c3e50' }}>
+            Desktop Access Required
+          </Typography>
+        </DialogTitle>
+        <DialogContent>
+          <Typography variant="body1" sx={{ mb: 2, color: '#64748b', lineHeight: 1.6 }}>
+            The Mongul Admin Panel is designed for desktop use to provide the best experience with full functionality.
+          </Typography>
+          <Typography variant="body1" sx={{ mb: 3, color: '#64748b', lineHeight: 1.6 }}>
+            Please access this panel from a desktop computer or laptop for optimal performance and complete feature access.
+          </Typography>
+          <Box sx={{ 
+            p: 2, 
+            background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%)',
+            borderRadius: 2,
+            border: '1px solid rgba(102, 126, 234, 0.2)'
+          }}>
+            <Typography variant="body2" sx={{ fontWeight: 600, color: '#667eea', mb: 1 }}>
+              💡 Recommended:
+            </Typography>
+            <Typography variant="body2" sx={{ color: '#64748b' }}>
+              • Use a desktop computer or laptop<br/>
+              • Ensure screen resolution of 1024px or higher<br/>
+              • Use a modern web browser (Chrome, Firefox, Safari, Edge)
+            </Typography>
+          </Box>
+        </DialogContent>
+        <DialogActions sx={{ p: 3, pt: 0 }}>
+          <Button 
+            onClick={handleCloseMobileDialog}
+            variant="contained"
+            sx={{
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              color: 'white',
+              fontWeight: 600,
+              px: 3,
+              py: 1.5,
+              borderRadius: 2,
+              '&:hover': {
+                background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)'
+              }
+            }}
+          >
+            I Understand
+          </Button>
+        </DialogActions>
+      </Dialog>
+    );
+  }
+
   const stats = [
     {
       title: 'Total Mentors',

@@ -658,4 +658,90 @@
 
 .container::-webkit-scrollbar-thumb:hover {
   background: rgba(102, 126, 234, 0.5);
+}
+
+/* Mobile Dialog Styles */
+.mobileDialog {
+  backdrop-filter: blur(10px) !important;
+}
+
+.mobileDialog .MuiDialog-paper {
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 20px !important;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15) !important;
+  max-width: 500px !important;
+  width: 90% !important;
+  margin: 20px !important;
+}
+
+.mobileDialogTitle {
+  text-align: center !important;
+  padding: 32px 32px 16px 32px !important;
+}
+
+.mobileDialogTitle .MuiTypography-h5 {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  background-clip: text !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  font-weight: 800 !important;
+  font-size: 1.75rem !important;
+}
+
+.mobileDialog .MuiDialogContent-root {
+  padding: 0 32px 16px 32px !important;
+}
+
+.mobileDialog .MuiDialogActions-root {
+  padding: 0 32px 32px 32px !important;
+  justify-content: center !important;
+}
+
+/* Mobile Dialog Animation */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(50px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.mobileDialog .MuiDialog-paper {
+  animation: slideInUp 0.4s ease-out;
+}
+
+/* Mobile Dialog Backdrop */
+.mobileDialog .MuiBackdrop-root {
+  background: rgba(0, 0, 0, 0.6) !important;
+  backdrop-filter: blur(5px) !important;
+}
+
+/* Responsive adjustments for mobile dialog */
+@media screen and (max-width: 480px) {
+  .mobileDialog .MuiDialog-paper {
+    width: 95% !important;
+    margin: 10px !important;
+    border-radius: 16px !important;
+  }
+  
+  .mobileDialogTitle {
+    padding: 24px 24px 12px 24px !important;
+  }
+  
+  .mobileDialog .MuiDialogContent-root {
+    padding: 0 24px 12px 24px !important;
+  }
+  
+  .mobileDialog .MuiDialogActions-root {
+    padding: 0 24px 24px 24px !important;
+  }
+  
+  .mobileDialogTitle .MuiTypography-h5 {
+    font-size: 1.5rem !important;
+  }
 } 
