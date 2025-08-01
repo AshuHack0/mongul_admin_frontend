@@ -154,6 +154,10 @@ const Login = ({ onSendOTP }) => {
                 'Send OTP'
               )}
             </button>
+
+            <Typography className={styles.consentText}>
+              By tapping Send OTP, you agree to receive a one-time SMS to verify your identity.
+            </Typography>
           </Box>
  
         </Paper>
