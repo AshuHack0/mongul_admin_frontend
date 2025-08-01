@@ -374,6 +374,15 @@
   box-shadow: none;
 }
 
+.consentText {
+  font-size: 0.8rem;
+  color: #666;
+  text-align: center;
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+  line-height: 1.4;
+}
+
 .demoText {
   margin-top: 1.5rem;
   color: #666;
