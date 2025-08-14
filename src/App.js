@@ -13,6 +13,7 @@ import Payments from './pages/Payments';
 import Reports from './pages/Reports';
 import Support from './pages/Support';
 import Settings from './pages/Settings';
+import Rooms from './pages/Rooms';
 import Sidebar from './components/Sidebar';
 
 const theme = createTheme({
@@ -70,23 +71,23 @@ const AppContent = ({ isAuthenticated, setIsAuthenticated }) => {
   const location = useLocation();
 
   // Check if user is on mobile device
-  useEffect(() => {
-    const checkMobile = () => {
-      const userAgent = navigator.userAgent.toLowerCase();
-      const isMobileDevice = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent);
-      const isSmallScreen = window.innerWidth <= 768;
+  // useEffect(() => {
+  //   const checkMobile = () => {
+  //     const userAgent = navigator.userAgent.toLowerCase();
+  //     const isMobileDevice = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent);
+  //     const isSmallScreen = window.innerWidth <= 568;
       
-      if (isMobileDevice || isSmallScreen) {
-        setIsMobile(true);
-        setShowMobileDialog(true);
-      }
-    };
+  //     if (isMobileDevice || isSmallScreen) {
+  //       setIsMobile(true);
+  //       setShowMobileDialog(true);
+  //     }
+  //   };
 
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
+  //   checkMobile();
+  //   window.addEventListener('resize', checkMobile);
     
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
+  //   return () => window.removeEventListener('resize', checkMobile);
+  // }, []);
 
   const handleCloseMobileDialog = () => {
     setShowMobileDialog(false);
@@ -234,7 +235,9 @@ const AppContent = ({ isAuthenticated, setIsAuthenticated }) => {
           <Route path="/reports" element={<Reports />} />
           <Route path="/support" element={<Support />} />
           <Route path="/settings" element={<Settings />} />
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/rooms" element={<Rooms />} />
+          <Route path="/" element={<Navigate to="/dashboard" replace />} /> 
+          
         </Routes>
       </Box>
     </Box>
