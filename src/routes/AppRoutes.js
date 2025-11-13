@@ -1,0 +1,47 @@
+import React from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+
+// Pages
+import AuthFlow from "../pages/auth/AuthFlow";
+import Dashboard from "../pages/Dashboard";
+import MentorApplications from "../pages/MentorApplications";
+import MentorApplicationDetail from "../pages/MentorApplicationDetail";
+import Mentors from "../pages/Mentors";
+import Categories from "../pages/Categories";
+import CategorySubcategories from "../pages/CategorySubcategories";
+
+const AppRoutes = () => {
+  const { isAuthenticated } = useSelector((state) => state.auth);
+
+  return (
+    <Routes>
+      {isAuthenticated ? (
+        <>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/mentor-applications" element={<MentorApplications />} />
+          <Route path="/mentors" element={<Mentors />} />
+          <Route
+            path="/mentor-applications/:applicationId"
+            element={<MentorApplicationDetail />}
+          />
+          <Route path="/categories" element={<Categories />} />
+          <Route
+            path="/categories/:categoryId"
+            element={<CategorySubcategories />}
+          />
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        </>
+      ) : (
+        <>
+          <Route path="/auth/*" element={<AuthFlow />} />
+          <Route path="/" element={<Navigate to="/auth" replace />} />
+          <Route path="*" element={<Navigate to="/auth" replace />} />
+        </>
+      )}
+    </Routes>
+  );
+};
+
+export default AppRoutes;

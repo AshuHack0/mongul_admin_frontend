@@ -1,167 +1,93 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { API_ENDPOINTS } from "../../config/api";
+import { createSlice } from "@reduxjs/toolkit";
+import {
+  initializeAuthAsync,
+  loginAsync,
+  logoutAsync,
+  sendOtpAsync,
+} from "../thunks/authThunks";
 
-/**
- * Async thunk for admin login
- */
-export const loginAdmin = createAsyncThunk(
-  "auth/loginAdmin",
-  async (credentials, { rejectWithValue }) => {
-    try {
-      const response = await fetch(API_ENDPOINTS.ADMIN_LOGIN, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(credentials),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        return rejectWithValue(data.message || "Login failed");
-      }
-
-      // Store token in localStorage
-      localStorage.setItem("adminToken", data.token);
-      localStorage.setItem("adminUser", JSON.stringify(data.user));
-
-      return data;
-    } catch (error) {
-      return rejectWithValue(error.message || "Network error");
-    }
-  }
-);
-
-/**
- * Async thunk for sending OTP
- */
-export const sendOTP = createAsyncThunk(
-  "auth/sendOTP",
-  async (email, { rejectWithValue }) => {
-    try {
-      const response = await fetch(API_ENDPOINTS.SEND_ADMIN_OTP, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        return rejectWithValue(data.message || "Failed to send OTP");
-      }
-
-      return data;
-    } catch (error) {
-      return rejectWithValue(error.message || "Network error");
-    }
-  }
-);
-
-/**
- * Auth slice for managing authentication state
- */
 const authSlice = createSlice({
   name: "auth",
   initialState: {
-    user: JSON.parse(localStorage.getItem("adminUser")) || null,
-    token: localStorage.getItem("adminToken") || null,
-    isAuthenticated: !!localStorage.getItem("adminToken"),
+    user: null,
+    isAuthenticated: false,
     loading: false,
     error: null,
-    otpSent: false,
   },
   reducers: {
-    /**
-     * Logout action
-     */
     logout: (state) => {
       state.user = null;
-      state.token = null;
       state.isAuthenticated = false;
       state.loading = false;
-      state.error = null;
-      state.otpSent = false;
-
-      // Clear localStorage
-      localStorage.removeItem("adminToken");
-      localStorage.removeItem("adminUser");
-    },
-
-    /**
-     * Clear error action
-     */
-    clearError: (state) => {
+      localStorage.removeItem("authToken");
       state.error = null;
     },
-
-    /**
-     * Set OTP sent status
-     */
-    setOTPSent: (state, action) => {
-      state.otpSent = action.payload;
+    login: (state, action) => {
+      state.user = action.payload.user;
+      state.isAuthenticated = true;
+      state.loading = false;
+      state.error = null;
     },
-
-    /**
-     * Update user profile
-     */
-    updateProfile: (state, action) => {
-      state.user = { ...state.user, ...action.payload };
-      localStorage.setItem("adminUser", JSON.stringify(state.user));
+    setError: (state, action) => {
+      state.error = action.payload;
     },
   },
+
   extraReducers: (builder) => {
-    // Login cases
     builder
-      .addCase(loginAdmin.pending, (state) => {
+      .addCase(initializeAuthAsync.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(loginAdmin.fulfilled, (state, action) => {
+      .addCase(initializeAuthAsync.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload.user;
-        state.token = action.payload.token;
+        state.user = action.payload.user.user;
         state.isAuthenticated = true;
         state.error = null;
       })
-      .addCase(loginAdmin.rejected, (state, action) => {
+      .addCase(initializeAuthAsync.rejected, (state) => {
         state.loading = false;
-        state.error = action.payload;
+        state.user = null;
         state.isAuthenticated = false;
       });
 
-    // Send OTP cases
     builder
-      .addCase(sendOTP.pending, (state) => {
+      .addCase(loginAsync.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(sendOTP.fulfilled, (state) => {
+      .addCase(loginAsync.fulfilled, (state, action) => {
         state.loading = false;
-        state.otpSent = true;
+        state.user = action.payload.user;
+        state.isAuthenticated = true;
         state.error = null;
       })
-      .addCase(sendOTP.rejected, (state, action) => {
+      .addCase(loginAsync.rejected, (state, action) => {
         state.loading = false;
+        state.isAuthenticated = false;
         state.error = action.payload;
-        state.otpSent = false;
       });
+
+    builder
+      .addCase(sendOtpAsync.pending, (state) => {
+        state.error = null;
+      })
+      .addCase(sendOtpAsync.fulfilled, (state) => {
+        state.error = null;
+      })
+      .addCase(sendOtpAsync.rejected, (state, action) => {
+        state.error = action.payload;
+      });
+
+    builder.addCase(logoutAsync.fulfilled, (state) => {
+      state.user = null;
+      state.isAuthenticated = false;
+      state.loading = false;
+      state.error = null;
+    });
   },
 });
 
-// Export actions
-export const { logout, clearError, setOTPSent, updateProfile } =
-  authSlice.actions;
-
-// Export selectors
-export const selectAuth = (state) => state.auth;
-export const selectUser = (state) => state.auth.user;
-export const selectIsAuthenticated = (state) => state.auth.isAuthenticated;
-export const selectAuthLoading = (state) => state.auth.loading;
-export const selectAuthError = (state) => state.auth.error;
-export const selectOTPSent = (state) => state.auth.otpSent;
+export const { logout, setError } = authSlice.actions;
 
 export default authSlice.reducer;

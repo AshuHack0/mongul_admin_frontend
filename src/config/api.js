@@ -1,23 +1,30 @@
-// API Configuration
-// const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8086';
-const API_BASE_URL =  'http://localhost:8086';
-// Debug logging
- 
+export const API_BASE_URL =
+  process.env.REACT_APP_API_URL || "http://localhost:8086";
 
-export const API_ENDPOINTS = {
-  // Auth endpoints
-  SEND_ADMIN_OTP: `${API_BASE_URL}/api/auth/send-admin-otp`,
-  ADMIN_LOGIN: `${API_BASE_URL}/api/auth/admin-login`,
-  MENTOR_LIST: `${API_BASE_URL}/api/users/mentor-list`,
-  MENTEE_LIST: `${API_BASE_URL}/api/users/mentee-list`, 
-  MENTEE_BECOME_MENTOR_QUEUE: `${API_BASE_URL}/api/users/mentee/become-mentor-queue`,
-  // Mentor approval endpoints
-  APPROVE_MENTOR: `${API_BASE_URL}/api/users/mentor`,
-  REJECT_MENTOR: `${API_BASE_URL}/api/users/mentor`,
-  // Add other endpoints here as needed
-  // USERS: `${API_BASE_URL}/api/users`,
-  // PROGRAMS: `${API_BASE_URL}/api/programs`,
-  // etc.
+export const API_V1_ENDPOINTS = {
+  SEND_ADMIN_OTP: `${API_BASE_URL}/api/v1/auth/send-otp`,
+  ADMIN_LOGIN: `${API_BASE_URL}/api/v1/auth/login-verify-otp`,
+  CURRENT_USER: `${API_BASE_URL}/api/v1/user/me`,
+  ADMIN_MENTOR_APPLICATIONS: `${API_BASE_URL}/api/v1/admin/mentor-applications`,
+  ADMIN_MENTORS: `${API_BASE_URL}/api/v1/admin/mentors`,
+
+  ADMIN_MENTOR_APPLICATION_BY_ID: (applicationId) =>
+    `${API_BASE_URL}/api/v1/admin/mentor-application/${applicationId}`,
+  ADMIN_UPDATE_MENTOR_APPLICATION_STATUS: (applicationId) =>
+    `${API_BASE_URL}/api/v1/admin/mentor-application/${applicationId}`,
+  
+  CATEGORIES: `${API_BASE_URL}/api/v1/category`,
+  ADD_CATEGORY: `${API_BASE_URL}/api/v1/category/add-category`,
+  UPDATE_CATEGORY: (categoryId) =>
+    `${API_BASE_URL}/api/v1/category/update-category/${categoryId}`,
+  DELETE_CATEGORY: (categoryId) =>
+    `${API_BASE_URL}/api/v1/category/delete-category/${categoryId}`,
+  ADD_SUBCATEGORY: (categoryId) =>
+    `${API_BASE_URL}/api/v1/category/add-subcategory/${categoryId}`,
+  UPDATE_SUBCATEGORY: (subcategoryId) =>
+    `${API_BASE_URL}/api/v1/category/update-subcategory/${subcategoryId}`,
+  DELETE_SUBCATEGORY: (subcategoryId) =>
+    `${API_BASE_URL}/api/v1/category/delete-subcategory/${subcategoryId}`,
 };
 
-export default API_BASE_URL; 
+export const API_ENDPOINTS = API_V1_ENDPOINTS;
