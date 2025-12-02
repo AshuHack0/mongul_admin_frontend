@@ -8,7 +8,7 @@ import {
 import { Security, ArrowBack } from '@mui/icons-material';
 import styles from '../../styles/Login.module.css';
 
-const VerifyOTP = ({ phoneNumber, onVerifyOTP, onResendOTP, onBack }) => {
+const RegisterVerifyOTP = ({ phoneNumber, fullName, onVerifyOTP, onResendOTP, onBack }) => {
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -71,7 +71,7 @@ const VerifyOTP = ({ phoneNumber, onVerifyOTP, onResendOTP, onBack }) => {
       const result = await onVerifyOTP(otpString);
 
       if (result?.success) {
-        setStatusMessage('OTP verified! Redirecting...');
+        setStatusMessage('Account created! Redirecting...');
       } else {
         setError(result?.message || 'Invalid OTP');
       }
@@ -118,11 +118,11 @@ const VerifyOTP = ({ phoneNumber, onVerifyOTP, onResendOTP, onBack }) => {
             <Security sx={{ fontSize: 34, color: 'white' }} />
           </div>
           <Typography component="h2" className={styles.brandHeadline}>
-            Secure Access Verification
+            Verify Your Account
           </Typography>
           <Typography className={styles.brandDescription}>
-            For your security, we verify every login with a short one-time passcode. This keeps your
-            admin controls protected.
+            For your security, we verify every registration with a short one-time passcode. This keeps your
+            admin account protected.
           </Typography>
           <div className={styles.brandHighlights}>
             <div className={styles.highlightItem}>
@@ -200,7 +200,7 @@ const VerifyOTP = ({ phoneNumber, onVerifyOTP, onResendOTP, onBack }) => {
                   Verifying...
                 </>
               ) : (
-                'Verify OTP'
+                'Verify & Create Account'
               )}
             </button>
 
@@ -231,5 +231,5 @@ const VerifyOTP = ({ phoneNumber, onVerifyOTP, onResendOTP, onBack }) => {
   );
 };
 
-export default VerifyOTP;
+export default RegisterVerifyOTP;
 

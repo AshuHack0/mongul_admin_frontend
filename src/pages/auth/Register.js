@@ -5,12 +5,13 @@ import {
   Typography,
   Alert
 } from '@mui/material';
-import { Phone } from '@mui/icons-material';
+import { PersonAdd, Phone } from '@mui/icons-material';
 import styles from '../../styles/Login.module.css';
 
-const Login = ({ onSendOTP, onSwitchToRegister }) => {
+const Register = ({ onSendOTP, onSwitchToLogin }) => {
   const [countryCode, setCountryCode] = useState('+91');
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [fullName, setFullName] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
@@ -20,6 +21,13 @@ const Login = ({ onSendOTP, onSwitchToRegister }) => {
     e.preventDefault();
     setError('');
     setLoading(true);
+
+    // Validate full name
+    if (!fullName || fullName.trim().length < 2) {
+      setError('Please enter a valid full name (at least 2 characters)');
+      setLoading(false);
+      return;
+    }
 
     // Validate country code
     if (!countryCode || !countryCode.startsWith('+')) {
@@ -39,7 +47,7 @@ const Login = ({ onSendOTP, onSwitchToRegister }) => {
     const fullPhoneNumber = countryCode + phoneNumber;
 
     try {
-      const result = await onSendOTP(fullPhoneNumber);
+      const result = await onSendOTP(fullPhoneNumber, fullName.trim());
 
       if (result?.success) {
         setOtpSent(true);
@@ -67,6 +75,14 @@ const Login = ({ onSendOTP, onSwitchToRegister }) => {
     setPhoneNumber(value);
   };
 
+  const handleFullNameChange = (e) => {
+    const value = e.target.value;
+    // Allow letters, spaces, and common name characters
+    if (/^[a-zA-Z\s'-]*$/.test(value) || value === '') {
+      setFullName(value);
+    }
+  };
+
   return (
     <Box className={styles.loginContainer}>
       <div className={styles.floatingElement}></div>
@@ -77,36 +93,36 @@ const Login = ({ onSendOTP, onSwitchToRegister }) => {
         <div className={styles.brandPanel}>
           <div className={styles.brandGlow}></div>
           <div className={styles.brandBadge}>
-            <Phone sx={{ fontSize: 36, color: 'white' }} />
+            <PersonAdd sx={{ fontSize: 36, color: 'white' }} />
           </div>
           <Typography component="h2" className={styles.brandHeadline}>
-            Welcome to Mongul Admin
+            Join Mongul Admin
           </Typography>
           <Typography className={styles.brandDescription}>
-            Monitor operations, track performance, and empower your team with real-time insights.
+            Create your admin account and start managing your platform with powerful tools and insights.
           </Typography>
           <div className={styles.brandHighlights}>
             <div className={styles.highlightItem}>
               <span className={styles.highlightDot}></span>
-              Secure OTP login with instant verification
+              Quick and secure registration process
             </div>
             <div className={styles.highlightItem}>
               <span className={styles.highlightDot}></span>
-              Live dashboards tailored to your business
+              Access to comprehensive admin dashboard
             </div>
             <div className={styles.highlightItem}>
               <span className={styles.highlightDot}></span>
-              24/7 access across devices
+              Full control over platform operations
             </div>
           </div>
         </div>
 
         <Paper className={styles.loginCard} elevation={0}>
           <Typography component="h1" className={styles.title}>
-            Admin Login
+            Create Account
           </Typography>
           <Typography className={styles.subtitle}>
-            Enter your phone number to receive a one-time passcode
+            Enter your details to create your admin account
           </Typography>
 
           {error && (
@@ -122,6 +138,25 @@ const Login = ({ onSendOTP, onSwitchToRegister }) => {
           )}
 
           <Box component="form" onSubmit={handleSubmit} className={styles.form}>
+            <div className={styles.formControl}>
+              <label htmlFor="full-name" className={styles.label}>
+                Full Name
+              </label>
+              <div style={{ position: 'relative' }}>
+                <PersonAdd className={styles.inputIcon} />
+                <input
+                  id="full-name"
+                  type="text"
+                  className={styles.input}
+                  value={fullName}
+                  onChange={handleFullNameChange}
+                  placeholder="Enter your full name"
+                  maxLength={50}
+                  required
+                />
+              </div>
+            </div>
+
             <div className={styles.formControl}>
               <label htmlFor="country-code" className={styles.label}>
                 Country Code
@@ -153,6 +188,7 @@ const Login = ({ onSendOTP, onSwitchToRegister }) => {
                   onChange={handlePhoneChange}
                   placeholder="Enter your phone number"
                   maxLength={15}
+                  required
                 />
               </div>
             </div>
@@ -176,15 +212,15 @@ const Login = ({ onSendOTP, onSwitchToRegister }) => {
               By tapping Send OTP, you agree to receive a one-time SMS to verify your identity.
             </Typography>
 
-            {onSwitchToRegister && (
+            {onSwitchToLogin && (
               <Typography className={styles.switchText}>
-                Don't have an account?{' '}
+                Already have an account?{' '}
                 <button
                   type="button"
-                  onClick={onSwitchToRegister}
+                  onClick={onSwitchToLogin}
                   className={styles.switchButton}
                 >
-                  Sign up
+                  Sign in
                 </button>
               </Typography>
             )}
@@ -195,5 +231,5 @@ const Login = ({ onSendOTP, onSwitchToRegister }) => {
   );
 };
 
-export default Login;
+export default Register;
 

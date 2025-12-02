@@ -522,6 +522,31 @@
   line-height: 1.4;
 }
 
+.switchText {
+  font-size: 0.9rem;
+  color: #666;
+  text-align: center;
+  margin-top: 1.5rem;
+  margin-bottom: 0;
+  line-height: 1.5;
+}
+
+.switchButton {
+  background: none;
+  border: none;
+  color: #2563eb;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  font-size: 0.9rem;
+  transition: color 0.3s ease;
+}
+
+.switchButton:hover {
+  color: #0ea5e9;
+}
+
 .demoText {
   margin-top: 1.5rem;
   color: #666;

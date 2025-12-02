@@ -12,19 +12,22 @@ export const initializeAuthAsync = createAsyncThunk(
     try {
       const response = await privateApi.get(API_V1_ENDPOINTS.CURRENT_USER);
       const data = response.data;
-      const user = data?.data || data;
+      // Extract user from response - could be data.user or data.data.user
+      const user = data?.data?.user || data?.user || data;
       return {
         user
       };
     } catch (error) {
       console.error('Auth initialization error:', error);
-      return rejectWithValue(error.message || 'Failed to initialize auth');
+      // Clear invalid token
+      localStorage.removeItem('authToken');
+      return rejectWithValue(error.response?.data?.message || error.message || 'Failed to initialize auth');
     }
   }
 );
 
 /**
- * Async thunk to send OTP
+ * Async thunk to send OTP for login
  * Makes API call to send OTP to the provided phone number
  */
 export const sendOtpAsync = createAsyncThunk(
@@ -42,6 +45,32 @@ export const sendOtpAsync = createAsyncThunk(
       };
     } catch (error) {
       console.error('Send OTP error:', error);
+      return rejectWithValue(
+        error.response?.data?.message || error.message || 'Failed to send OTP'
+      );
+    }
+  }
+);
+
+/**
+ * Async thunk to send OTP for registration
+ * Makes API call to send OTP to the provided phone number for registration
+ */
+export const sendRegisterOtpAsync = createAsyncThunk(
+  'auth/sendRegisterOtp',
+  async ({ phone }, { rejectWithValue }) => {
+    try {
+      const response = await publicApi.post(API_V1_ENDPOINTS.SEND_REGISTER_OTP, {
+        phone,
+      });
+
+      const data = response.data;
+
+      return {
+        message: data.message || 'OTP sent successfully',
+      };
+    } catch (error) {
+      console.error('Send Register OTP error:', error);
       return rejectWithValue(
         error.response?.data?.message || error.message || 'Failed to send OTP'
       );
@@ -79,7 +108,7 @@ export const loginAsync = createAsyncThunk(
     } catch (error) {
       console.error('Login error:', error);
       return rejectWithValue(
-        error.message || 'Could not connect to server. Please check your internet connection and try again.'
+        error.response?.data?.message || error.message || 'Could not connect to server. Please check your internet connection and try again.'
       );
     }
   }
@@ -101,11 +130,15 @@ export const registerAsync = createAsyncThunk(
 
       const data = response.data;
 
-      if (!data.success) {
+      if (!data.token || !data.user) {
         return rejectWithValue(data.message || 'Registration failed');
       }
 
+      localStorage.setItem('authToken', data.token);
+
       return {
+        token: data.token,
+        user: data.user,
         message: data.message || 'Registration successful',
       };
     } catch (error) {

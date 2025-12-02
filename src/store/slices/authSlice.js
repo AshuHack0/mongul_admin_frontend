@@ -4,6 +4,8 @@ import {
   loginAsync,
   logoutAsync,
   sendOtpAsync,
+  sendRegisterOtpAsync,
+  registerAsync,
 } from "../thunks/authThunks";
 
 const authSlice = createSlice({
@@ -41,7 +43,8 @@ const authSlice = createSlice({
       })
       .addCase(initializeAuthAsync.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload.user.user;
+        // User is already extracted in the thunk
+        state.user = action.payload.user;
         state.isAuthenticated = true;
         state.error = null;
       })
@@ -76,6 +79,34 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(sendOtpAsync.rejected, (state, action) => {
+        state.error = action.payload;
+      });
+
+    builder
+      .addCase(sendRegisterOtpAsync.pending, (state) => {
+        state.error = null;
+      })
+      .addCase(sendRegisterOtpAsync.fulfilled, (state) => {
+        state.error = null;
+      })
+      .addCase(sendRegisterOtpAsync.rejected, (state, action) => {
+        state.error = action.payload;
+      });
+
+    builder
+      .addCase(registerAsync.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(registerAsync.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload.user;
+        state.isAuthenticated = true;
+        state.error = null;
+      })
+      .addCase(registerAsync.rejected, (state, action) => {
+        state.loading = false;
+        state.isAuthenticated = false;
         state.error = action.payload;
       });
 

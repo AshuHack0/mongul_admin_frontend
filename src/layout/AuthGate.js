@@ -1,6 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import { initializeAuthAsync } from "../store/thunks/authThunks";
 import { useEffect } from "react";
+import { Box, CircularProgress } from "@mui/material";
 
 export const AuthGate = ({ children }) => {
   const dispatch = useDispatch();
@@ -10,5 +11,20 @@ export const AuthGate = ({ children }) => {
     dispatch(initializeAuthAsync());
   }, [dispatch]);
 
-  return loading ? null : <>{children}</>;
+  if (loading) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "100vh",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  return <>{children}</>;
 };
