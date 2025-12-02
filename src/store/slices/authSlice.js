@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import {
   initializeAuthAsync,
   loginAsync,
+  googleLoginAsync,
   logoutAsync,
   sendOtpAsync,
   sendRegisterOtpAsync,
@@ -66,6 +67,23 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(loginAsync.rejected, (state, action) => {
+        state.loading = false;
+        state.isAuthenticated = false;
+        state.error = action.payload;
+      });
+
+    builder
+      .addCase(googleLoginAsync.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(googleLoginAsync.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload.user;
+        state.isAuthenticated = true;
+        state.error = null;
+      })
+      .addCase(googleLoginAsync.rejected, (state, action) => {
         state.loading = false;
         state.isAuthenticated = false;
         state.error = action.payload;

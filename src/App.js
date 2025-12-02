@@ -2,9 +2,11 @@ import React from "react";
 import { BrowserRouter as Router } from "react-router-dom";
 import { CssBaseline, ThemeProvider, createTheme } from "@mui/material";
 import { Provider } from "react-redux";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 import store from "./store";
 import { AuthGate } from "./layout/AuthGate";
 import AppRoutes from "./routes/AppRoutes";
+import { GOOGLE_CLIENT_ID } from "./config/google";
 
 const theme = createTheme({
   palette: {
@@ -55,6 +57,7 @@ const theme = createTheme({
 
 function App() {
   return (
+    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
     <Provider store={store}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
@@ -65,6 +68,7 @@ function App() {
         </AuthGate>
       </ThemeProvider>
     </Provider>
+    </GoogleOAuthProvider>
   );
 }
 

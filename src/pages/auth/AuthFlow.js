@@ -3,7 +3,7 @@ import Login from './Login';
 import Register from './Register';
 import VerifyOTP from './VerifyOTP';
 import RegisterVerifyOTP from './RegisterVerifyOTP';
-import { sendOtpAsync, sendRegisterOtpAsync, loginAsync, registerAsync } from '../../store/thunks/authThunks';
+import { sendOtpAsync, sendRegisterOtpAsync, loginAsync, registerAsync, googleLoginAsync } from '../../store/thunks/authThunks';
 import { useDispatch } from 'react-redux';
 
 
@@ -109,12 +109,25 @@ const AuthFlow = () => {
     setCurrentStep('login');
   };
 
+  const handleGoogleLogin = async (idToken) => {
+    try {
+      await dispatch(googleLoginAsync({ idToken })).unwrap();
+      return { success: true };
+    } catch (error) {
+      return {
+        success: false,
+        message: typeof error === 'string' ? error : error?.message || 'Google login failed',
+      };
+    }
+  };
+
   return (
     <>
       {currentStep === 'login' && (
         <Login 
           onSendOTP={handleSendOTP}
           onSwitchToRegister={handleSwitchToRegister}
+          onGoogleLogin={handleGoogleLogin}
         />
       )}
 

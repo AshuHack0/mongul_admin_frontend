@@ -126,6 +126,7 @@ export const registerAsync = createAsyncThunk(
         phone,
         fullName,
         otp,
+        role: 'admin', // Set role to admin for admin frontend registrations
       });
 
       const data = response.data;
@@ -150,6 +151,43 @@ export const registerAsync = createAsyncThunk(
   }
 );
 
+
+/**
+ * Async thunk to handle Google login
+ * Makes API call with Google ID token and stores token and user data
+ */
+export const googleLoginAsync = createAsyncThunk(
+  'auth/googleLogin',
+  async ({ idToken }, { rejectWithValue }) => {
+    try {
+      const response = await publicApi.post(API_V1_ENDPOINTS.GOOGLE_LOGIN, {
+        idToken,
+        role: 'admin', // Set role to admin for admin frontend Google login
+      });
+
+      const data = response.data;
+
+      if (!data.token || !data.user) {
+        return rejectWithValue(data.message || 'Google login failed');
+      }
+
+      localStorage.setItem('authToken', data.token);
+
+      return {
+        token: data.token,
+        user: data.user,
+        message: data.message || 'Google login successful',
+      };
+    } catch (error) {
+      console.error('Google login error:', error);
+      return rejectWithValue(
+        error.response?.data?.message ||
+          error.message ||
+          'Google login failed. Please try again.'
+      );
+    }
+  }
+);
 
 /**
  * Async thunk to handle logout

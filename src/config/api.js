@@ -4,6 +4,7 @@ export const API_BASE_URL =
 export const API_V1_ENDPOINTS = {
   SEND_ADMIN_OTP: `${API_BASE_URL}/api/v1/auth/login/send-otp`,
   ADMIN_LOGIN: `${API_BASE_URL}/api/v1/auth/login/verify-otp`,
+  GOOGLE_LOGIN: `${API_BASE_URL}/api/v1/auth/login/google`,
   SEND_REGISTER_OTP: `${API_BASE_URL}/api/v1/auth/register/send-otp`,
   REGISTER_VERIFY_OTP: `${API_BASE_URL}/api/v1/auth/register/verify-otp`,
   CURRENT_USER: `${API_BASE_URL}/api/v1/user/me`,
