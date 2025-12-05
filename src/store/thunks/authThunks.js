@@ -90,6 +90,7 @@ export const loginAsync = createAsyncThunk(
       const response = await publicApi.post(API_V1_ENDPOINTS.ADMIN_LOGIN, {
         phone,
         otp,
+        isAdminLogin: true, // Flag to indicate this is an admin login attempt
       });
 
       const data = response.data;
