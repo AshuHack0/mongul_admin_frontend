@@ -33,7 +33,7 @@
 
 .title {
   font-weight: 800 !important;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+ 
   background-clip: text !important;
   -webkit-background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
