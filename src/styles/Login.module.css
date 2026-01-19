@@ -311,7 +311,8 @@
 }
 
 .input::placeholder {
-  color: #999;
+  color: #6b7280;
+  opacity: 1;
 }
 
 /* Country Code Input Styles */
@@ -337,7 +338,8 @@
 }
 
 .countryCodeInput::placeholder {
-  color: #999;
+  color: #6b7280;
+  opacity: 1;
   font-weight: normal;
 }
 
