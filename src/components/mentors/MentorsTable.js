@@ -71,6 +71,8 @@ const MentorsTable = ({
                 ? "success"
                 : mentor.mentorApplicationStatus === "rejected"
                 ? "error"
+                : mentor.mentorApplicationStatus === "upgrade_requested"
+                ? "info"
                 : "default"
             }
             variant="outlined"

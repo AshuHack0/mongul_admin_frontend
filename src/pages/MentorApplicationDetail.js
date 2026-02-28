@@ -156,10 +156,13 @@ const getStatusChipColor = (status) => {
       return "success";
     case "rejected":
       return "error";
+    case "applied":
     case "pending":
     case "review":
     case "in review":
       return "warning";
+    case "upgrade_requested":
+      return "info";
     default:
       return "default";
   }
@@ -294,7 +297,7 @@ const MentorApplicationDetail = () => {
       { label: "LinkedIn", value: application.linkedInUrl },
       { label: "Portfolio", value: application.portfolioUrl },
       { label: "Website", value: application.website },
-      { label: "Status", value: application.status },
+      { label: "Status", value: application.mentorApplicationStatus },
       { label: "Applied On", value: application.createdAt },
     ]
       .map((item) => ({
@@ -317,9 +320,10 @@ const MentorApplicationDetail = () => {
     application?.motivation || application?.statement
   );
 
-  const normalizedStatus = normalizeValue(application?.status).toLowerCase();
+  const normalizedStatus = normalizeValue(application?.mentorApplicationStatus).toLowerCase();
   const isApproved = normalizedStatus === "approved";
   const isRejected = normalizedStatus === "rejected";
+  const isUpgradeRequest = application?.mentorApplicationStatus === "upgrade_requested";
 
   const renderDocumentPreview = useCallback((doc, options = {}) => {
     if (!doc) return null;
@@ -485,6 +489,8 @@ const MentorApplicationDetail = () => {
                   ? "Rejecting..."
                   : isRejected
                   ? "Already rejected"
+                  : isUpgradeRequest
+                  ? "Reject Upgrade"
                   : "Reject application"}
               </Button>
               <Button
@@ -497,6 +503,8 @@ const MentorApplicationDetail = () => {
                   ? "Approving..."
                   : isApproved
                   ? "Already approved"
+                  : isUpgradeRequest
+                  ? "Approve Upgrade"
                   : "Approve application"}
               </Button>
             </Stack>
@@ -520,6 +528,12 @@ const MentorApplicationDetail = () => {
             data-testid="mentor-application-detail-success"
           >
             {successMessage}
+          </Alert>
+        )}
+
+        {!loading && isUpgradeRequest && (
+          <Alert severity="info" icon={false}>
+            <strong>Pro Upgrade Request</strong> — This mentor is currently Basic and has requested an upgrade to Pro. Approving will promote them to Pro; rejecting will restore their Basic status.
           </Alert>
         )}
 

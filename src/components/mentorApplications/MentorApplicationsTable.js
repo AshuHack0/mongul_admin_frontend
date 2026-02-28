@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 import {
+  Chip,
   CircularProgress,
   Paper,
   Stack,
@@ -12,6 +13,16 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
+
+const getStatusColor = (status) => {
+  switch (status) {
+    case "approved": return "success";
+    case "rejected": return "error";
+    case "applied": return "warning";
+    case "upgrade_requested": return "info";
+    default: return "default";
+  }
+};
 
 const defaultRowsPerPageOptions = [5, 10, 25];
 
@@ -28,7 +39,7 @@ const MentorApplicationsTable = ({
     if (loading) {
       return (
         <TableRow>
-          <TableCell colSpan={5} align="center">
+          <TableCell colSpan={6} align="center">
             <Stack direction="row" justifyContent="center" py={2}>
               <CircularProgress size={28} />
             </Stack>
@@ -40,7 +51,7 @@ const MentorApplicationsTable = ({
     if (!applications.length) {
       return (
         <TableRow>
-          <TableCell colSpan={5} align="center">
+          <TableCell colSpan={6} align="center">
             <Typography variant="body2" color="text.secondary">
               No mentor applications found.
             </Typography>
@@ -67,6 +78,14 @@ const MentorApplicationsTable = ({
         <TableCell>{application.phone ?? "—"}</TableCell>
         <TableCell>{application.mentorType ?? "—"}</TableCell>
         <TableCell>{application.experience ?? "—"}</TableCell>
+        <TableCell>
+          <Chip
+            size="small"
+            label={application.mentorApplicationStatus ?? "—"}
+            color={getStatusColor(application.mentorApplicationStatus)}
+            variant="outlined"
+          />
+        </TableCell>
         <TableCell>{formatDate(application.createdAt)}</TableCell>
       </TableRow>
     ));
@@ -82,6 +101,7 @@ const MentorApplicationsTable = ({
               <TableCell>Phone</TableCell>
               <TableCell>Type</TableCell>
               <TableCell>Experience</TableCell>
+              <TableCell>Status</TableCell>
               <TableCell>Applied</TableCell>
             </TableRow>
           </TableHead>
