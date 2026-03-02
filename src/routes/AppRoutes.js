@@ -10,6 +10,7 @@ import MentorApplicationDetail from "../pages/MentorApplicationDetail";
 import Mentors from "../pages/Mentors";
 import Categories from "../pages/Categories";
 import CategorySubcategories from "../pages/CategorySubcategories";
+import CategoryChangeRequests from "../pages/CategoryChangeRequests";
 
 const AppRoutes = () => {
   const { isAuthenticated, user } = useSelector((state) => state.auth);
@@ -30,6 +31,10 @@ const AppRoutes = () => {
           <Route
             path="/categories/:categoryId"
             element={<CategorySubcategories />}
+          />
+          <Route
+            path="/category-change-requests"
+            element={<CategoryChangeRequests />}
           />
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />

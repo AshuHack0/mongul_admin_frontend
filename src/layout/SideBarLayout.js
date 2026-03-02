@@ -9,6 +9,7 @@ const navItems = [
   { label: "Mentor Applications", icon: "", to: "/mentor-applications" },
   { label: "Mentors", icon: "", to: "/mentors" },
   { label: "Categories", icon: "", to: "/categories" },
+  { label: "Category Requests", icon: "", to: "/category-change-requests" },
 ];
 
 const SideBarLayout = ({ header, children, className }) => {

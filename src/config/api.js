@@ -28,6 +28,10 @@ export const API_V1_ENDPOINTS = {
     `${API_BASE_URL}/api/v1/category/update-subcategory/${subcategoryId}`,
   DELETE_SUBCATEGORY: (subcategoryId) =>
     `${API_BASE_URL}/api/v1/category/delete-subcategory/${subcategoryId}`,
+
+  ADMIN_CATEGORY_CHANGE_REQUESTS: `${API_BASE_URL}/api/v1/admin/category-change-requests`,
+  ADMIN_DECIDE_CATEGORY_CHANGE_REQUEST: (requestId) =>
+    `${API_BASE_URL}/api/v1/admin/category-change-requests/${requestId}`,
 };
 
 export const API_ENDPOINTS = API_V1_ENDPOINTS;
