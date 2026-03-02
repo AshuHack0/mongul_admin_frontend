@@ -79,6 +79,8 @@ const collectDocumentLinks = (application) => {
     if (!url || typeof url !== "string") return;
     const trimmedUrl = url.trim();
     if (!trimmedUrl || seen.has(trimmedUrl)) return;
+    // Only allow http/https URLs to prevent javascript: URL injection
+    if (!isUrl(trimmedUrl)) return;
     links.push({ label, url: trimmedUrl });
     seen.add(trimmedUrl);
   };
@@ -354,6 +356,7 @@ const MentorApplicationDetail = () => {
           component="iframe"
           title={doc.label}
           src={`${doc.url}#toolbar=1`}
+          sandbox="allow-scripts allow-same-origin"
           sx={{
             width: "100%",
             minHeight: variant === "inline" ? 500 : 540,

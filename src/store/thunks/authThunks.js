@@ -127,7 +127,6 @@ export const registerAsync = createAsyncThunk(
         phone,
         fullName,
         otp,
-        role: 'admin', // Set role to admin for admin frontend registrations
       });
 
       const data = response.data;

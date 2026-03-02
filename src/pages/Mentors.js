@@ -55,6 +55,7 @@ const Mentors = () => {
       } catch (message) {
         setError(message);
         setMentors([]);
+        setPagination((prev) => ({ ...prev, page: 1, total: 0 }));
       } finally {
         setLoading(false);
       }

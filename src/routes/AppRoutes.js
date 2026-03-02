@@ -12,11 +12,12 @@ import Categories from "../pages/Categories";
 import CategorySubcategories from "../pages/CategorySubcategories";
 
 const AppRoutes = () => {
-  const { isAuthenticated } = useSelector((state) => state.auth);
+  const { isAuthenticated, user } = useSelector((state) => state.auth);
+  const isAdmin = isAuthenticated && user?.role === 'admin';
 
   return (
     <Routes>
-      {isAuthenticated ? (
+      {isAdmin ? (
         <>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/mentor-applications" element={<MentorApplications />} />

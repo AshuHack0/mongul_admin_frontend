@@ -139,6 +139,8 @@ const Categories = () => {
   const handleSubmitCategory = async (event) => {
     event.preventDefault();
 
+    if (savingCategory) return;
+
     const trimmedName = categoryForm.name.trim();
 
     if (!trimmedName) {
