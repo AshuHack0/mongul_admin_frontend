@@ -536,7 +536,7 @@ const MentorApplicationDetail = () => {
 
         {!loading && isUpgradeRequest && (
           <Alert severity="info" icon={false}>
-            <strong>Pro Upgrade Request</strong> — This mentor is currently Basic and has requested an upgrade to Pro. Approving will promote them to Pro; rejecting will restore their Basic status.
+            <strong>Pro Upgrade Request</strong> — This mentor is currently Standard and has requested an upgrade to Pro. Approving will promote them to Pro; rejecting will restore their Standard status.
           </Alert>
         )}
 
