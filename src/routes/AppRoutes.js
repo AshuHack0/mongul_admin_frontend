@@ -11,6 +11,7 @@ import Mentors from "../pages/Mentors";
 import Categories from "../pages/Categories";
 import CategorySubcategories from "../pages/CategorySubcategories";
 import CategoryChangeRequests from "../pages/CategoryChangeRequests";
+import Surveys from "../pages/Surveys";
 
 const AppRoutes = () => {
   const { isAuthenticated, user } = useSelector((state) => state.auth);
@@ -36,6 +37,7 @@ const AppRoutes = () => {
             path="/category-change-requests"
             element={<CategoryChangeRequests />}
           />
+          <Route path="/surveys" element={<Surveys />} />
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </>

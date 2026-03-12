@@ -32,6 +32,8 @@ export const API_V1_ENDPOINTS = {
   ADMIN_CATEGORY_CHANGE_REQUESTS: `${API_BASE_URL}/api/v1/admin/category-change-requests`,
   ADMIN_DECIDE_CATEGORY_CHANGE_REQUEST: (requestId) =>
     `${API_BASE_URL}/api/v1/admin/category-change-requests/${requestId}`,
+
+  SURVEYS: `${API_BASE_URL}/api/v1/survey`,
 };
 
 export const API_ENDPOINTS = API_V1_ENDPOINTS;
