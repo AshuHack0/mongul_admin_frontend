@@ -1,13 +1,7 @@
 import React, { useMemo } from "react";
 import {
-  Avatar,
-  Box,
   Button,
-  Card,
-  CardContent,
   Chip,
-  Fade,
-  Grid,
   InputAdornment,
   Stack,
   TextField,
@@ -27,221 +21,163 @@ const SubcategoryListSection = ({
 
   const { filteredSubcategories, showEmptySearchState } = useMemo(() => {
     if (!hasSearch) {
-      return {
-        filteredSubcategories: subcategories,
-        showEmptySearchState: false,
-      };
+      return { filteredSubcategories: subcategories, showEmptySearchState: false };
     }
 
-    const normalizedSearch = searchTerm.trim().toLowerCase();
-
-    if (!normalizedSearch) {
-      return {
-        filteredSubcategories: subcategories,
-        showEmptySearchState: false,
-      };
-    }
+    const q = searchTerm.trim().toLowerCase();
+    if (!q) return { filteredSubcategories: subcategories, showEmptySearchState: false };
 
     const filtered = subcategories.filter(({ name = "" }) =>
-      name.toLowerCase().includes(normalizedSearch)
+      name.toLowerCase().includes(q)
     );
 
-    return {
-      filteredSubcategories: filtered,
-      showEmptySearchState: !filtered.length,
-    };
+    return { filteredSubcategories: filtered, showEmptySearchState: !filtered.length };
   }, [hasSearch, searchTerm, subcategories]);
 
   return (
-    <Card
-      variant="outlined"
-      sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}
+    <div
+      style={{
+        background: "#ffffff",
+        border: "1px solid #e5e5e5",
+        borderRadius: 8,
+        overflow: "hidden",
+      }}
     >
-      <CardContent
-        sx={{
-          p: { xs: 2.5, md: 3 },
-          flexGrow: 1,
+      {/* Header */}
+      <div
+        style={{
           display: "flex",
-          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 16,
+          padding: "14px 20px",
+          borderBottom: "1px solid #f4f4f5",
         }}
       >
-        <Stack spacing={3} sx={{ flexGrow: 1 }}>
-          <Stack
-            direction={{ xs: "column", sm: "row" }}
-            spacing={2}
-            justifyContent="space-between"
-            alignItems={{ xs: "flex-start", sm: "center" }}
-          >
-            <Box>
-              <Typography variant="h6" fontWeight={600}>
-                Subcategories
-              </Typography>
-            </Box>
-            {hasSearch && (
-              <TextField
-                size="small"
-                value={searchTerm}
-                onChange={(event) => onSearchChange(event.target.value)}
-                placeholder="Search subcategories"
-                sx={{ minWidth: { xs: "100%", sm: 240 } }}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <SearchIcon
-                        fontSize="small"
-                        sx={{ color: "text.secondary" }}
-                      />
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            )}
-          </Stack>
+        <Typography style={{ fontWeight: 600, fontSize: "0.9rem", color: "#111111" }}>
+          Subcategories
+          <span style={{ marginLeft: 8, fontSize: "0.775rem", fontWeight: 500, color: "#a1a1aa" }}>
+            {subcategories.length}
+          </span>
+        </Typography>
 
-          {!subcategories.length ? (
-            <Stack
-              alignItems="center"
-              justifyContent="center"
-              spacing={1}
-              sx={{
-                py: 6,
-                borderRadius: 2,
-                border: (theme) => `1px dashed ${theme.palette.divider}`,
-                color: "text.secondary",
-                textAlign: "center",
+        {hasSearch && (
+          <TextField
+            size="small"
+            value={searchTerm}
+            onChange={(e) => onSearchChange(e.target.value)}
+            placeholder="Search…"
+            sx={{ width: 200 }}
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon fontSize="small" sx={{ color: "#a1a1aa" }} />
+                  </InputAdornment>
+                ),
+              },
+            }}
+          />
+        )}
+      </div>
+
+      {/* Empty state — no subcategories */}
+      {!subcategories.length && (
+        <div style={{ padding: "40px 20px", textAlign: "center" }}>
+          <Typography style={{ fontSize: "0.875rem", color: "#a1a1aa" }}>
+            No subcategories yet. Use the button above to add one.
+          </Typography>
+        </div>
+      )}
+
+      {/* Empty search state */}
+      {showEmptySearchState && (
+        <div style={{ padding: "40px 20px", textAlign: "center" }}>
+          <Typography style={{ fontSize: "0.875rem", color: "#a1a1aa", marginBottom: 10 }}>
+            No results for "{searchTerm.trim()}"
+          </Typography>
+          <Button size="small" onClick={onClearSearch}>
+            Clear search
+          </Button>
+        </div>
+      )}
+
+      {/* List */}
+      {!showEmptySearchState && filteredSubcategories.map((sub, idx) => {
+        const tags = Array.isArray(sub?.tags) ? sub.tags : [];
+        const isLast = idx === filteredSubcategories.length - 1;
+
+        return (
+          <div
+            key={sub._id}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 16,
+              padding: "12px 20px",
+              borderBottom: isLast ? "none" : "1px solid #f4f4f5",
+            }}
+          >
+            {/* Initial circle */}
+            <div
+              style={{
+                width: 32,
+                height: 32,
+                borderRadius: 6,
+                background: "#f4f4f5",
+                border: "1px solid #e5e5e5",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: "0.75rem",
+                fontWeight: 700,
+                color: "#52525b",
+                flexShrink: 0,
               }}
             >
-              <Typography variant="body2">
-                No subcategories have been created yet.
+              {sub.name?.[0]?.toUpperCase() ?? "?"}
+            </div>
+
+            {/* Name + tags */}
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <Typography
+                style={{
+                  fontWeight: 600,
+                  fontSize: "0.875rem",
+                  color: "#111111",
+                  marginBottom: tags.length ? 5 : 0,
+                }}
+              >
+                {sub.name}
               </Typography>
-              <Typography variant="caption">
-                Use the button above to add your first subcategory.
-              </Typography>
-            </Stack>
-          ) : showEmptySearchState ? (
-            <Stack
-              alignItems="center"
-              justifyContent="center"
-              spacing={1}
-              sx={{
-                py: 6,
-                borderRadius: 2,
-                border: (theme) => `1px dashed ${theme.palette.divider}`,
-                color: "text.secondary",
-                textAlign: "center",
-              }}
-            >
-              <Typography variant="body2" gutterBottom>
-                No subcategories match “{searchTerm.trim()}”.
-              </Typography>
-              <Button size="small" onClick={onClearSearch}>
-                Clear search
+              {tags.length > 0 && (
+                <Stack direction="row" spacing={0.75} flexWrap="wrap" rowGap={0.5}>
+                  {tags.map((tag) => (
+                    <Chip
+                      key={tag}
+                      label={tag}
+                      size="small"
+                      variant="outlined"
+                      style={{ fontSize: "0.675rem", borderColor: "#e5e5e5", color: "#71717a" }}
+                    />
+                  ))}
+                </Stack>
+              )}
+            </div>
+
+            {/* Actions */}
+            <Stack direction="row" spacing={1} flexShrink={0}>
+              <Button size="small" variant="outlined" onClick={() => onEdit(sub)}>
+                Edit
+              </Button>
+              <Button size="small" variant="outlined" color="error" onClick={() => onDelete(sub)}>
+                Delete
               </Button>
             </Stack>
-          ) : (
-            <Grid container spacing={2}>
-              {filteredSubcategories.map((subcategory) => {
-                const tags = Array.isArray(subcategory?.tags)
-                  ? subcategory.tags
-                  : [];
-                const orderValue =
-                  subcategory?.order !== undefined &&
-                  subcategory?.order !== null &&
-                  subcategory.order !== ""
-                    ? subcategory.order
-                    : null;
-
-                return (
-                  <Grid item xs={12} md={6} key={subcategory._id}>
-                    <Fade in appear timeout={250}>
-                      <Card
-                        variant="outlined"
-                        sx={{
-                          height: "100%",
-                          transition: "all 0.2s ease",
-                          "&:hover": {
-                            boxShadow: 4,
-                            borderColor: "primary.light",
-                            transform: "translateY(-2px)",
-                          },
-                        }}
-                      >
-                        <CardContent sx={{ p: { xs: 2, md: 2.5 } }}>
-                          <Stack spacing={2}>
-                            <Stack direction="row" spacing={2} alignItems="center">
-                              <Avatar
-                                sx={{
-                                  bgcolor: "primary.main",
-                                  color: "primary.contrastText",
-                                  width: 40,
-                                  height: 40,
-                                  fontWeight: 600,
-                                }}
-                              >
-                                {subcategory.name?.[0]?.toUpperCase() ?? "?"}
-                              </Avatar>
-                              <Box>
-                                <Typography variant="subtitle1" fontWeight={600}>
-                                  {subcategory.name}
-                                </Typography>
-                              </Box>
-                            </Stack>
-
-                            {tags.length ? (
-                              <Stack
-                                direction="row"
-                                spacing={1}
-                                flexWrap="wrap"
-                                rowGap={1}
-                              >
-                                {tags.map((tag) => (
-                                  <Chip
-                                    key={tag}
-                                    size="small"
-                                    label={tag}
-                                    color="primary"
-                                    variant="outlined"
-                                  />
-                                ))}
-                              </Stack>
-                            ) : (
-                              <Typography variant="caption" color="text.secondary">
-                                No tags provided yet.
-                              </Typography>
-                            )}
-                            <Stack
-                              direction="row"
-                              spacing={1.25}
-                              justifyContent="flex-end"
-                            >
-                              <Button
-                                size="small"
-                                variant="outlined"
-                                onClick={() => onEdit(subcategory)}
-                              >
-                                Edit
-                              </Button>
-                              <Button
-                                size="small"
-                                variant="outlined"
-                                color="error"
-                                onClick={() => onDelete(subcategory)}
-                              >
-                                Delete
-                              </Button>
-                            </Stack>
-                          </Stack>
-                        </CardContent>
-                      </Card>
-                    </Fade>
-                  </Grid>
-                );
-              })}
-            </Grid>
-          )}
-        </Stack>
-      </CardContent>
-    </Card>
+          </div>
+        );
+      })}
+    </div>
   );
 };
 

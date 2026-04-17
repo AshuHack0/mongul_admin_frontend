@@ -1,16 +1,17 @@
 import React from "react";
-import { Box, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import styles from "../../styles/dashboard.module.css";
 
 const DashboardHeader = ({ userName }) => {
   return (
-    <Box className={styles.headerContent}>
-      <div>
-        <Typography variant="h5" className={styles.headerTitle}>
-          Welcome back, {userName} 👋
-        </Typography>
-      </div>
-    </Box>
+    <div className={styles.pageHeader}>
+      <Typography className={styles.pageTitle}>
+        Welcome back, {userName || "Admin"}
+      </Typography>
+      <Typography className={styles.pageSubtitle}>
+        Here's what's happening in your platform.
+      </Typography>
+    </div>
   );
 };
 

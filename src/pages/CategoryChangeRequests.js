@@ -27,6 +27,7 @@ import {
   Paper,
 } from "@mui/material";
 import SideBarLayout from "../layout/SideBarLayout";
+import styles from "../styles/dashboard.module.css";
 import {
   fetchCategoryChangeRequestsThunk,
   decideCategoryChangeRequestThunk,
@@ -143,7 +144,12 @@ const CategoryChangeRequests = () => {
   };
 
   return (
-    <SideBarLayout header={<Typography variant="h6" fontWeight={600}>Category Change Requests</Typography>}>
+    <SideBarLayout header={
+      <div className={styles.pageHeader}>
+        <Typography className={styles.pageTitle}>Category Change Requests</Typography>
+        <Typography className={styles.pageSubtitle}>Review mentor requests to change their category.</Typography>
+      </div>
+    }>
       <Stack spacing={2}>
         {error && (
           <Alert severity="error" onClose={() => setError(null)}>

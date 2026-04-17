@@ -1,19 +1,14 @@
 import React from "react";
-import { Box, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
+import styles from "../../styles/dashboard.module.css";
 
-const MentorsHeader = () => {
-  return (
-    <Box display="flex" flexDirection="column" gap={0.5}>
-      <Typography variant="h5" fontWeight={600}>
-        Mentors
-      </Typography>
-      <Typography variant="body2" color="text.secondary">
-        Browse approved mentors and their profile details.
-      </Typography>
-    </Box>
-  );
-};
+const MentorsHeader = () => (
+  <div className={styles.pageHeader}>
+    <Typography className={styles.pageTitle}>Mentors</Typography>
+    <Typography className={styles.pageSubtitle}>
+      Browse approved mentors and their profile details.
+    </Typography>
+  </div>
+);
 
 export default MentorsHeader;
-
-

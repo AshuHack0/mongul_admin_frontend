@@ -1,32 +1,31 @@
 import React from "react";
-import { Box, Button, Stack, Typography } from "@mui/material";
+import { Button, Stack, Typography } from "@mui/material";
+import styles from "../../styles/dashboard.module.css";
 
-const CategorySubcategoriesHeader = ({ category, loading, onBack, onCreate }) => {
-  return (
-    <Stack
-      direction={{ xs: "column", sm: "row" }}
-      justifyContent="space-between"
-      alignItems={{ xs: "flex-start", sm: "center" }}
-      spacing={1.5}
-    >
-      <Box display="flex" flexDirection="column" gap={0.5}>
-        <Typography variant="h5" fontWeight={600}>
-          Category: {category?.name ?? "Category"}
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Manage the subcategories associated with this category.
-        </Typography>
-      </Box>
-      <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5}>
-        <Button variant="outlined" onClick={onBack}>
-          Back to Categories
-        </Button>
-        <Button variant="contained" onClick={onCreate} disabled={!category || loading}>
-          Add Subcategory
-        </Button>
-      </Stack>
+const CategorySubcategoriesHeader = ({ category, loading, onBack, onCreate }) => (
+  <div style={{ display: "flex", alignItems: "center", gap: 16, width: "100%" }}>
+    <div className={styles.pageHeader} style={{ flex: 1 }}>
+      <Typography className={styles.pageTitle}>
+        {category?.name ?? "Category"}
+      </Typography>
+      <Typography className={styles.pageSubtitle}>
+        Manage the subcategories associated with this category.
+      </Typography>
+    </div>
+    <Stack direction="row" spacing={1}>
+      <Button variant="outlined" size="small" onClick={onBack}>
+        Back
+      </Button>
+      <Button
+        variant="contained"
+        size="small"
+        onClick={onCreate}
+        disabled={!category || loading}
+      >
+        Add Subcategory
+      </Button>
     </Stack>
-  );
-};
+  </div>
+);
 
 export default CategorySubcategoriesHeader;
