@@ -32,6 +32,12 @@ const navSections = [
       { label: "Surveys", icon: <PollOutlinedIcon fontSize="small" />, to: "/surveys" },
     ],
   },
+  {
+    label: "Blog",
+    items: [
+      { label: "Blog", icon: <AssignmentOutlinedIcon fontSize="small" />, to: "/blog" },
+    ],
+  },
 ];
 
 const getInitials = (name) => {

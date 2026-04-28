@@ -12,6 +12,7 @@ import Categories from "../pages/Categories";
 import CategorySubcategories from "../pages/CategorySubcategories";
 import CategoryChangeRequests from "../pages/CategoryChangeRequests";
 import Surveys from "../pages/Surveys";
+import Blog from "../pages/Blog";
 
 const AppRoutes = () => {
   const { isAuthenticated, user } = useSelector((state) => state.auth);
@@ -38,6 +39,7 @@ const AppRoutes = () => {
             element={<CategoryChangeRequests />}
           />
           <Route path="/surveys" element={<Surveys />} />
+          <Route path="/blog" element={<Blog />} />
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </>
