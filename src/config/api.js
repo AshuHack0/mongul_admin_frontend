@@ -34,6 +34,8 @@ export const API_V1_ENDPOINTS = {
     `${API_BASE_URL}/api/v1/admin/category-change-requests/${requestId}`,
 
   SURVEYS: `${API_BASE_URL}/api/v1/survey`,
+  BLOGS: `${API_BASE_URL}/api/v1/blog`,
+  BLOG_BY_ID: (id) => `${API_BASE_URL}/api/v1/blog/${id}`,
 };
 
 export const API_ENDPOINTS = API_V1_ENDPOINTS;

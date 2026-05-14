@@ -293,6 +293,11 @@
   overflow-y: auto;
 }
 
+.noPadding {
+  padding: 0;
+  gap: 0;
+}
+
 /* ── Dashboard empty state ──────────────────────────── */
 .emptyState {
   display: flex;

@@ -13,6 +13,8 @@ import CategorySubcategories from "../pages/CategorySubcategories";
 import CategoryChangeRequests from "../pages/CategoryChangeRequests";
 import Surveys from "../pages/Surveys";
 import Blog from "../pages/Blog";
+import BlogList from "../pages/BlogList";
+import BlogView from "../pages/BlogView";
 
 const AppRoutes = () => {
   const { isAuthenticated, user } = useSelector((state) => state.auth);
@@ -40,6 +42,9 @@ const AppRoutes = () => {
           />
           <Route path="/surveys" element={<Surveys />} />
           <Route path="/blog" element={<Blog />} />
+          <Route path="/blog/list" element={<BlogList />} />
+          <Route path="/blog/edit/:blogId" element={<Blog />} />
+          <Route path="/blog/view/:blogId" element={<BlogView />} />
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </>

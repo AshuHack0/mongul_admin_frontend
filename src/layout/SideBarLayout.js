@@ -35,7 +35,7 @@ const navSections = [
   {
     label: "Blog",
     items: [
-      { label: "Blog", icon: <AssignmentOutlinedIcon fontSize="small" />, to: "/blog" },
+      { label: "All Posts", icon: <AssignmentOutlinedIcon fontSize="small" />, to: "/blog/list" },
     ],
   },
 ];
@@ -54,7 +54,7 @@ const formatHeaderDate = () =>
     day: "numeric",
   }).format(new Date());
 
-const SideBarLayout = ({ header, children, className }) => {
+const SideBarLayout = ({ header, children, className, noPadding }) => {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
   const initials = getInitials(user?.fullName);
@@ -138,7 +138,9 @@ const SideBarLayout = ({ header, children, className }) => {
             </div>
           </div>
         </header>
-        <main className={styles.main}>{children}</main>
+        <main className={`${styles.main} ${noPadding ? styles.noPadding : ""}`}>
+          {children}
+        </main>
       </div>
     </div>
   );
@@ -148,11 +150,13 @@ SideBarLayout.propTypes = {
   header: PropTypes.node,
   children: PropTypes.node.isRequired,
   className: PropTypes.string,
+  noPadding: PropTypes.bool,
 };
 
 SideBarLayout.defaultProps = {
   header: null,
   className: undefined,
+  noPadding: false,
 };
 
 export default SideBarLayout;

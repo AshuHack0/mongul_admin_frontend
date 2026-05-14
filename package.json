@@ -16,6 +16,8 @@
     "@tiptap/extension-code-block-lowlight": "^3.22.3",
     "@tiptap/extension-image": "^3.22.3",
     "@tiptap/extension-link": "^3.22.5",
+    "@tiptap/extension-placeholder": "^3.23.4",
+    "@tiptap/extensions": "^3.23.4",
     "@tiptap/react": "^3.22.3",
     "@tiptap/starter-kit": "^3.22.3",
     "axios": "^1.11.0",

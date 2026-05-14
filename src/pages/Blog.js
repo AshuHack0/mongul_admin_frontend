@@ -1,4 +1,6 @@
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback, useReducer, memo } from "react";
+import { useDispatch } from "react-redux";
+import { useParams, useNavigate } from "react-router-dom";
 import {
   Box,
   Button,
@@ -10,7 +12,6 @@ import {
   IconButton,
   InputBase,
   Stack,
-  Tooltip,
   Typography,
 } from "@mui/material";
 import {
@@ -26,19 +27,26 @@ import {
   HorizontalRule,
   AddPhotoAlternate,
   Close,
-  FiberManualRecord,
   Link as LinkIcon,
-
+  TextDecrease as TextDecreaseIcon,
+  TextIncrease as TextIncreaseIcon,
 } from "@mui/icons-material";
 import { useEditor, EditorContent, NodeViewWrapper, ReactNodeViewRenderer } from "@tiptap/react";
-import { Node, mergeAttributes } from "@tiptap/core";
+import { Node, Mark, mergeAttributes } from "@tiptap/core";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
+import Placeholder from "@tiptap/extension-placeholder";
 import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
 import { createLowlight } from "lowlight";
 import javascript from "highlight.js/lib/languages/javascript";
 import python from "highlight.js/lib/languages/python";
 import SideBarLayout from "../layout/SideBarLayout";
+import styles from "../styles/dashboard.module.css";
+import {
+  fetchBlogByIdThunk,
+  createBlogThunk,
+  updateBlogThunk,
+} from "../store/thunks/blogThunks";
 
 const lowlight = createLowlight();
 lowlight.register("javascript", javascript);
@@ -147,8 +155,28 @@ const LinkPreviewNode = Node.create({
     return [{ tag: 'div[data-link-preview]' }];
   },
 
-  renderHTML({ HTMLAttributes }) {
-    return ["div", mergeAttributes({ "data-link-preview": "" }, HTMLAttributes)];
+  renderHTML({ node }) {
+    const { url = '', title = '', description = '', image = '' } = node.attrs;
+    let domain = url;
+    try { domain = new URL(url).hostname; } catch {}
+
+    const textSide = ['div', { style: 'flex:1;padding:20px 24px;display:flex;flex-direction:column;justify-content:space-between;min-width:0;' },
+      ['div', {},
+        ['div', { style: 'font-weight:700;font-size:1.05rem;line-height:1.4;margin-bottom:8px;color:#18181b;' }, title || domain],
+        ...(description ? [['div', { style: 'font-size:0.85rem;color:#71717a;line-height:1.55;' }, description]] : []),
+      ],
+      ['div', { style: 'font-size:0.8rem;color:#a1a1aa;margin-top:12px;' }, domain],
+    ];
+
+    return ['div', { 'data-link-preview': '' },
+      ['a', {
+        href: url, target: '_blank', rel: 'noopener noreferrer',
+        style: 'display:flex;align-items:stretch;text-decoration:none;color:inherit;border:1px solid #e4e4e7;border-radius:8px;overflow:hidden;margin:16px 0;max-height:160px;',
+      },
+        textSide,
+        ...(image ? [['img', { src: image, alt: title || '', style: 'width:160px;flex-shrink:0;object-fit:cover;' }]] : []),
+      ],
+    ];
   },
 
   addNodeView() {
@@ -293,27 +321,77 @@ const ImageResizeExtension = Node.create({
   },
 });
 
+// ─── Font size extension ──────────────────────────────────────────────────────
+
+const FONT_SIZE_BASE = 19; // ≈ 1.2rem at 16px root
+const FONT_SIZE_STEP = 2;
+const FONT_SIZE_MIN = 10;
+const FONT_SIZE_MAX = 72;
+
+const FontSize = Mark.create({
+  name: "fontSize",
+
+  addAttributes() {
+    return {
+      size: {
+        default: null,
+        parseHTML: (el) => {
+          const fs = el.style.fontSize;
+          return fs?.endsWith("px") ? parseInt(fs) : null;
+        },
+        renderHTML: (attrs) =>
+          attrs.size ? { style: `font-size: ${attrs.size}px` } : {},
+      },
+    };
+  },
+
+  parseHTML() {
+    return [{ tag: "span", getAttrs: (el) => el.style.fontSize ? null : false }];
+  },
+
+  renderHTML({ HTMLAttributes }) {
+    return ["span", mergeAttributes(HTMLAttributes), 0];
+  },
+
+  addCommands() {
+    return {
+      setFontSize: (size) => ({ commands }) =>
+        commands.setMark(this.name, { size }),
+      unsetFontSize: () => ({ commands }) =>
+        commands.unsetMark(this.name),
+    };
+  },
+});
+
 // ─── Toolbar helpers ─────────────────────────────────────────────────────────
 
-const ToolBtn = ({ title, onClick, active, children }) => (
-  <Tooltip title={title} arrow>
-    <IconButton
-      size="small"
-      onClick={onClick}
-      sx={{
-        borderRadius: 1.5,
-        width: 32,
-        height: 32,
-        color: active ? "primary.contrastText" : "text.secondary",
-        bgcolor: active ? "primary.main" : "transparent",
-        "&:hover": { bgcolor: active ? "primary.dark" : "action.hover" },
-        transition: "all 0.15s",
-      }}
-    >
-      {children}
-    </IconButton>
-  </Tooltip>
-);
+const ToolBtn = memo(({ title, onClick, active, disabled, children }) => (
+  <button
+    type="button"
+    onClick={onClick}
+    title={title}
+    disabled={disabled}
+    style={{
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      borderRadius: "6px",
+      width: "32px",
+      height: "32px",
+      border: "none",
+      cursor: disabled ? "not-allowed" : "pointer",
+      color: active ? "#ffffff" : disabled ? "#d4d4d8" : "#71717a",
+      backgroundColor: active ? "#18181b" : "transparent",
+      transition: "background 0.1s, color 0.1s",
+      outline: "none",
+      opacity: disabled ? 0.5 : 1,
+    }}
+    onMouseEnter={(e) => { if (!active && !disabled) e.currentTarget.style.backgroundColor = "rgba(0,0,0,0.05)"; }}
+    onMouseLeave={(e) => { if (!active && !disabled) e.currentTarget.style.backgroundColor = "transparent"; }}
+  >
+    {children}
+  </button>
+));
 
 const ToolGroup = ({ children }) => (
   <Stack direction="row" alignItems="center" gap={0.25}>{children}</Stack>
@@ -325,8 +403,12 @@ const Sep = () => (
 
 // ─── MenuBar ─────────────────────────────────────────────────────────────────
 
-const MenuBar = ({ editor, onAddImage, onAddLink }) => {
+function MenuBar({ editor, onAddImage, onAddLink }) {
   if (!editor) return null;
+
+  const currentSize = editor.getAttributes("fontSize").size ?? FONT_SIZE_BASE;
+  const atMin = currentSize <= FONT_SIZE_MIN;
+  const atMax = currentSize >= FONT_SIZE_MAX;
 
   return (
     <Box
@@ -343,66 +425,98 @@ const MenuBar = ({ editor, onAddImage, onAddLink }) => {
         position: "sticky",
         top: 0,
         zIndex: 10,
+        minHeight: 52,
       }}
     >
-      <ToolGroup>
-        <ToolBtn title="Undo" onClick={() => editor.chain().focus().undo().run()}>
-          <UndoIcon sx={{ fontSize: 16 }} />
+      <Box sx={{ maxWidth: 780, mx: "auto", width: "100%", display: "flex", alignItems: "center", gap: 0.5 }}>
+        <ToolGroup>
+          <ToolBtn title="Undo" onClick={() => editor.chain().focus().undo().run()}>
+            <UndoIcon sx={{ fontSize: 16 }} />
+          </ToolBtn>
+          <ToolBtn title="Redo" onClick={() => editor.chain().focus().redo().run()}>
+            <RedoIcon sx={{ fontSize: 16 }} />
+          </ToolBtn>
+        </ToolGroup>
+        <Sep />
+        <ToolGroup>
+          <ToolBtn title="Bold" onClick={() => editor.chain().focus().toggleBold().run()} active={editor.isActive("bold")}>
+            <FormatBold sx={{ fontSize: 16 }} />
+          </ToolBtn>
+          <ToolBtn title="Italic" onClick={() => editor.chain().focus().toggleItalic().run()} active={editor.isActive("italic")}>
+            <FormatItalic sx={{ fontSize: 16 }} />
+          </ToolBtn>
+          <ToolBtn title="Strikethrough" onClick={() => editor.chain().focus().toggleStrike().run()} active={editor.isActive("strike")}>
+            <StrikethroughS sx={{ fontSize: 16 }} />
+          </ToolBtn>
+          <ToolBtn title="Link" onClick={onAddLink} active={editor.isActive("link")}>
+            <LinkIcon sx={{ fontSize: 16 }} />
+          </ToolBtn>
+        </ToolGroup>
+        <Sep />
+        <ToolGroup>
+          <ToolBtn title="Heading 1" onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()} active={editor.isActive("heading", { level: 1 })}>
+            <Typography sx={{ fontSize: "0.7rem", fontWeight: 800, lineHeight: 1 }}>H1</Typography>
+          </ToolBtn>
+          <ToolBtn title="Heading 2" onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} active={editor.isActive("heading", { level: 2 })}>
+            <Typography sx={{ fontSize: "0.7rem", fontWeight: 800, lineHeight: 1 }}>H2</Typography>
+          </ToolBtn>
+          <ToolBtn title="Heading 3" onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()} active={editor.isActive("heading", { level: 3 })}>
+            <Typography sx={{ fontSize: "0.7rem", fontWeight: 800, lineHeight: 1 }}>H3</Typography>
+          </ToolBtn>
+        </ToolGroup>
+        <Sep />
+        <ToolGroup>
+          <ToolBtn title="Bullet List" onClick={() => editor.chain().focus().toggleBulletList().run()} active={editor.isActive("bulletList")}>
+            <FormatListBulleted sx={{ fontSize: 16 }} />
+          </ToolBtn>
+          <ToolBtn title="Blockquote" onClick={() => editor.chain().focus().toggleBlockquote().run()} active={editor.isActive("blockquote")}>
+            <FormatQuote sx={{ fontSize: 16 }} />
+          </ToolBtn>
+          <ToolBtn title="Code Block" onClick={() => editor.chain().focus().toggleCodeBlock().run()} active={editor.isActive("codeBlock")}>
+            <CodeIcon sx={{ fontSize: 16 }} />
+          </ToolBtn>
+          <ToolBtn title="Horizontal Rule" onClick={() => editor.chain().focus().setHorizontalRule().run()}>
+            <HorizontalRule sx={{ fontSize: 16 }} />
+          </ToolBtn>
+        </ToolGroup>
+        <Sep />
+        <ToolGroup>
+          <ToolBtn
+            title={`Decrease font size (${currentSize}px → ${Math.max(FONT_SIZE_MIN, currentSize - FONT_SIZE_STEP)}px)`}
+            disabled={atMin}
+            onClick={() => editor.chain().focus().setFontSize(Math.max(FONT_SIZE_MIN, currentSize - FONT_SIZE_STEP)).run()}
+          >
+            <TextDecreaseIcon sx={{ fontSize: 16 }} />
+          </ToolBtn>
+          <Box
+            sx={{
+              fontSize: "0.7rem", fontWeight: 700, minWidth: 28, textAlign: "center",
+              color: currentSize !== FONT_SIZE_BASE ? "#18181b" : "#a1a1aa",
+              cursor: currentSize !== FONT_SIZE_BASE ? "pointer" : "default",
+              userSelect: "none",
+            }}
+            title={currentSize !== FONT_SIZE_BASE ? "Reset to default size" : "Default size"}
+            onClick={() => currentSize !== FONT_SIZE_BASE && editor.chain().focus().unsetFontSize().run()}
+          >
+            {currentSize}
+          </Box>
+          <ToolBtn
+            title={`Increase font size (${currentSize}px → ${Math.min(FONT_SIZE_MAX, currentSize + FONT_SIZE_STEP)}px)`}
+            disabled={atMax}
+            onClick={() => editor.chain().focus().setFontSize(Math.min(FONT_SIZE_MAX, currentSize + FONT_SIZE_STEP)).run()}
+          >
+            <TextIncreaseIcon sx={{ fontSize: 16 }} />
+          </ToolBtn>
+        </ToolGroup>
+        <Sep />
+        <ToolBtn title="Insert Image" onClick={onAddImage}>
+          <ImageIcon sx={{ fontSize: 16 }} />
         </ToolBtn>
-        <ToolBtn title="Redo" onClick={() => editor.chain().focus().redo().run()}>
-          <RedoIcon sx={{ fontSize: 16 }} />
-        </ToolBtn>
-      </ToolGroup>
-      <Sep />
-      <ToolGroup>
-        <ToolBtn title="Bold" onClick={() => editor.chain().focus().toggleBold().run()} active={editor.isActive("bold")}>
-          <FormatBold sx={{ fontSize: 16 }} />
-        </ToolBtn>
-        <ToolBtn title="Italic" onClick={() => editor.chain().focus().toggleItalic().run()} active={editor.isActive("italic")}>
-          <FormatItalic sx={{ fontSize: 16 }} />
-        </ToolBtn>
-        <ToolBtn title="Strikethrough" onClick={() => editor.chain().focus().toggleStrike().run()} active={editor.isActive("strike")}>
-          <StrikethroughS sx={{ fontSize: 16 }} />
-        </ToolBtn>
-        <ToolBtn title="Link" onClick={onAddLink} active={editor.isActive("link")}>
-          <LinkIcon sx={{ fontSize: 16 }} />
-        </ToolBtn>
-      </ToolGroup>
-      <Sep />
-      <ToolGroup>
-        <ToolBtn title="Heading 1" onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()} active={editor.isActive("heading", { level: 1 })}>
-          <Typography sx={{ fontSize: "0.7rem", fontWeight: 800, lineHeight: 1 }}>H1</Typography>
-        </ToolBtn>
-        <ToolBtn title="Heading 2" onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} active={editor.isActive("heading", { level: 2 })}>
-          <Typography sx={{ fontSize: "0.7rem", fontWeight: 800, lineHeight: 1 }}>H2</Typography>
-        </ToolBtn>
-        <ToolBtn title="Heading 3" onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()} active={editor.isActive("heading", { level: 3 })}>
-          <Typography sx={{ fontSize: "0.7rem", fontWeight: 800, lineHeight: 1 }}>H3</Typography>
-        </ToolBtn>
-      </ToolGroup>
-      <Sep />
-      <ToolGroup>
-        <ToolBtn title="Bullet List" onClick={() => editor.chain().focus().toggleBulletList().run()} active={editor.isActive("bulletList")}>
-          <FormatListBulleted sx={{ fontSize: 16 }} />
-        </ToolBtn>
-        <ToolBtn title="Blockquote" onClick={() => editor.chain().focus().toggleBlockquote().run()} active={editor.isActive("blockquote")}>
-          <FormatQuote sx={{ fontSize: 16 }} />
-        </ToolBtn>
-        <ToolBtn title="Code Block" onClick={() => editor.chain().focus().toggleCodeBlock().run()} active={editor.isActive("codeBlock")}>
-          <CodeIcon sx={{ fontSize: 16 }} />
-        </ToolBtn>
-        <ToolBtn title="Horizontal Rule" onClick={() => editor.chain().focus().setHorizontalRule().run()}>
-          <HorizontalRule sx={{ fontSize: 16 }} />
-        </ToolBtn>
-      </ToolGroup>
-      <Sep />
-      <ToolBtn title="Insert Image" onClick={onAddImage}>
-        <ImageIcon sx={{ fontSize: 16 }} />
-      </ToolBtn>
-      <Box sx={{ flexGrow: 1 }} />
+        <Box sx={{ flexGrow: 1 }} />
+      </Box>
     </Box>
   );
-};
+}
 
 // ─── Link dialog ─────────────────────────────────────────────────────────────
 
@@ -444,6 +558,10 @@ function Blog() {
 
   const [publishOpen, setPublishOpen] = useState(false);
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
+  const { blogId } = useParams();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const [previewTitle, setPreviewTitle] = useState("");
   const [previewSubtitle, setPreviewSubtitle] = useState("");
   const [coverImage, setCoverImage] = useState(null);
@@ -451,6 +569,8 @@ function Blog() {
   const [topics, setTopics] = useState([]);
   const [titleError, setTitleError] = useState(false);
   const [savedAt, setSavedAt] = useState(null);
+  const [publishing, setPublishing] = useState(false);
+  const [loading, setLoading] = useState(!!blogId);
 
   const insertLinkPreview = useCallback(async (editor, url) => {
     const meta = await fetchLinkPreview(url);
@@ -460,15 +580,26 @@ function Blog() {
     }).run();
   }, []);
 
+  const [, tick] = useReducer(x => x + 1, 0);
+
   const editor = useEditor({
     extensions: [
-      StarterKit.configure({ codeBlock: false }),
+      StarterKit.configure({
+        codeBlock: false,
+        link: false,
+      }),
       ImageResizeExtension,
       Link.configure({ openOnClick: false, HTMLAttributes: { rel: "noopener noreferrer", target: "_blank" } }),
+      Placeholder.configure({
+        placeholder: "Start writing blog...",
+        emptyEditorClass: "is-editor-empty",
+      }),
       CodeBlockLowlight.configure({ lowlight }),
       LinkPreviewNode,
+      FontSize,
     ],
-    content: "<p>Start writing your blog...</p>",
+    content: "",
+    onTransaction: () => queueMicrotask(tick),
     editorProps: {
       handlePaste(view, event) {
         const text = event.clipboardData?.getData("text/plain")?.trim();
@@ -489,22 +620,40 @@ function Blog() {
 
   useEffect(() => {
     if (!editor) return;
-    const saved = localStorage.getItem("blog-draft");
-    if (saved) {
-      try { editor.commands.setContent(JSON.parse(saved)); } catch {}
+
+    if (blogId) {
+      dispatch(fetchBlogByIdThunk(blogId))
+        .unwrap()
+        .then((blog) => {
+          setPreviewTitle(blog.title || "");
+          setPreviewSubtitle(blog.subtitle || "");
+          setTopics(blog.topics || []);
+          setCoverImage(blog.coverImage || null);
+          if (blog.content) setTimeout(() => editor.commands.setContent(blog.content), 0);
+          setLoading(false);
+        })
+        .catch(() => {
+          alert("Failed to load blog post.");
+          navigate("/blog/list");
+        });
+    } else {
+      const saved = localStorage.getItem("blog-draft");
+      if (saved) {
+        try {
+          setTimeout(() => editor.commands.setContent(JSON.parse(saved)), 0);
+        } catch {}
+      }
     }
-  }, [editor]);
+  }, [editor, blogId, dispatch, navigate]);
 
   useEffect(() => {
-    if (!editor) return;
+    if (!editor || blogId) return; // Don't auto-save to localStorage if editing an existing blog
     const id = setInterval(() => {
       localStorage.setItem("blog-draft", JSON.stringify(editor.getJSON()));
       setSavedAt(new Date());
-    }, 3000);
+    }, 5000);
     return () => clearInterval(id);
-  }, [editor]);
-
-  if (!editor) return null;
+  }, [editor, blogId]);
 
   const addImage = () => fileInputRef.current?.click();
 
@@ -513,7 +662,9 @@ function Blog() {
     if (!file || !file.type.startsWith("image/")) return;
     if (file.size > 5 * 1024 * 1024) { alert("Image must be under 5 MB."); return; }
     const reader = new FileReader();
-    reader.onload = (ev) => editor.chain().focus().setImage({ src: ev.target.result }).run();
+    reader.onload = (ev) => {
+      if (!editor.isDestroyed) editor.chain().focus().setImage({ src: ev.target.result }).run();
+    };
     reader.readAsDataURL(file);
     e.target.value = "";
   };
@@ -521,6 +672,7 @@ function Blog() {
   const handleCoverFileChange = (e) => {
     const file = e.target.files[0];
     if (!file || !file.type.startsWith("image/")) return;
+    if (file.size > 5 * 1024 * 1024) { alert("Cover image must be under 5 MB."); return; }
     const reader = new FileReader();
     reader.onload = (ev) => setCoverImage(ev.target.result);
     reader.readAsDataURL(file);
@@ -547,102 +699,159 @@ function Blog() {
     }
   };
 
-  const handlePublishClick = () => {
-    if (!previewTitle.trim()) { setTitleError(true); return; }
+  const handlePublishClick = async () => {
+    if (!previewTitle.trim()) {
+      setTitleError(true);
+      return;
+    }
     setTitleError(false);
-    console.log("PUBLISH:", { previewTitle, previewSubtitle, coverImage, topics, content: editor.getJSON() });
-    setPublishOpen(false);
+    setPublishing(true);
+
+    const blogData = {
+      title: previewTitle,
+      subtitle: previewSubtitle,
+      coverImage,
+      topics,
+      content: editor.getJSON(),
+      htmlContent: editor.getHTML(),
+      status: "published",
+    };
+
+    try {
+      if (blogId) {
+        await dispatch(updateBlogThunk({ id: blogId, data: blogData })).unwrap();
+      } else {
+        await dispatch(createBlogThunk(blogData)).unwrap();
+        localStorage.removeItem("blog-draft");
+      }
+      setPublishOpen(false);
+      navigate("/blog/list");
+    } catch (err) {
+      alert(err || "Failed to publish blog.");
+    } finally {
+      setPublishing(false);
+    }
   };
 
-  const savedLabel = savedAt
-    ? `Saved at ${savedAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
-    : "Saving…";
+  const savedLabel = blogId
+    ? null
+    : savedAt
+      ? `Saved at ${savedAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
+      : "Draft not yet saved";
 
   const header = (
-    <Stack spacing={0.5}>
-      <Typography variant="h5" fontWeight={700}>Blog Editor</Typography>
-      <Typography variant="body2" color="text.secondary">Write and publish blog posts with rich formatting.</Typography>
-    </Stack>
+    <div className={styles.pageHeader}>
+      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", width: "100%" }}>
+        <div>
+          <Typography className={styles.pageTitle}>{blogId ? "Edit Post" : "Blog Editor"}</Typography>
+          <Typography className={styles.pageSubtitle}>
+            {blogId ? `Editing: ${previewTitle}` : "Write and publish blog posts with rich formatting."}
+          </Typography>
+        </div>
+        <Button
+          variant="outlined"
+          onClick={() => navigate("/blog/list")}
+          sx={{ borderRadius: 2, textTransform: "none", fontWeight: 700, borderColor: "#e4e4e7", color: "#18181b" }}
+        >
+          Back to List
+        </Button>
+      </Box>
+    </div>
   );
 
+  if (loading && blogId) {
+    return (
+      <SideBarLayout header={header}>
+        <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "60vh" }}>
+          <CircularProgress size={40} sx={{ color: "#18181b" }} />
+        </Box>
+      </SideBarLayout>
+    );
+  }
+
+  if (!editor) return null;
+
   return (
-    <SideBarLayout header={header}>
-      <Box sx={{ display: "flex", flexDirection: "column", height: "100%", overflow: "hidden", bgcolor: "#f5f6f8" }}>
+    <SideBarLayout header={header} noPadding>
+      <Box sx={{ display: "flex", flexDirection: "column", height: "100%", overflow: "hidden", bgcolor: "#ffffff" }}>
 
         <MenuBar editor={editor} onAddImage={addImage} onAddLink={() => setLinkDialogOpen(true)} />
 
         {/* Writing area */}
-        <Box sx={{ flex: 1, overflow: "auto", py: 4, px: 2 }} onClick={() => editor.commands.focus()}>
+        <Box sx={{ flex: 1, overflow: "auto", display: "flex", flexDirection: "column" }} onClick={() => editor.commands.focus()}>
           <Box
             sx={{
-              maxWidth: 780,
-              mx: "auto",
-              bgcolor: "background.paper",
-              borderRadius: 3,
-              boxShadow: "0 2px 16px rgba(0,0,0,0.07)",
-              p: { xs: 3, md: 5 },
-              minHeight: 480,
+              flex: 1,
+              width: "100%",
+              px: { xs: 3, md: 12 },
+              py: { xs: 4, md: 8 },
               "& .tiptap": {
                 outline: "none",
-                fontFamily: "'Georgia', 'Times New Roman', serif",
-                fontSize: "1.1rem",
-                lineHeight: 1.85,
+                fontFamily: "'Inter', sans-serif",
+                fontSize: "1.2rem",
+                lineHeight: 1.6,
                 color: "text.primary",
+                maxWidth: 900,
+                mx: "auto",
                 "& p.is-editor-empty:first-of-type::before": {
-                  color: "#c0c4cc",
+                  color: "#94a3b8",
                   content: "attr(data-placeholder)",
                   float: "left",
                   height: 0,
                   pointerEvents: "none",
-                  fontStyle: "italic",
                 },
-                "& h1": { fontFamily: "Inter, sans-serif", fontSize: "2.2rem", fontWeight: 800, lineHeight: 1.2, mt: 0, mb: "0.5em" },
-                "& h2": { fontFamily: "Inter, sans-serif", fontSize: "1.6rem", fontWeight: 700, lineHeight: 1.3, mt: "1.5em", mb: "0.4em" },
-                "& h3": { fontFamily: "Inter, sans-serif", fontSize: "1.25rem", fontWeight: 700, lineHeight: 1.4, mt: "1.25em", mb: "0.4em" },
-                "& p": { mt: 0, mb: "1em" },
-                "& ul, & ol": { paddingInlineStart: "1.6rem", mb: "1em" },
-                "& li": { mb: "0.3em" },
-                "& a": { color: "#6366f1", textDecoration: "underline", textUnderlineOffset: "3px", "&:hover": { color: "#4f46e5" } },
+                "& h1": { fontSize: "3rem", fontWeight: 800, lineHeight: 1.1, mt: 0, mb: "0.5em", letterSpacing: "-0.02em" },
+                "& h2": { fontSize: "2rem", fontWeight: 700, lineHeight: 1.2, mt: "1.5em", mb: "0.4em" },
+                "& h3": { fontSize: "1.5rem", fontWeight: 700, lineHeight: 1.3, mt: "1.25em", mb: "0.4em" },
+                "& p": { mt: 0, mb: "1.2em" },
+                "& ul, & ol": { paddingInlineStart: "1.6rem", mb: "1.2em" },
+                "& li": { mb: "0.4em" },
+                "& a": { color: "#2563eb", textDecoration: "underline", textUnderlineOffset: "3px", "&:hover": { color: "#1d4ed8" } },
                 "& blockquote": {
-                  borderLeft: "4px solid #6366f1",
-                  ml: 0, pl: "1.25em", pr: "1em", py: "0.25em", my: "1.5em",
+                  borderLeft: "3px solid #e2e8f0",
+                  ml: 0, pl: "1.5em", my: "2em",
                   fontStyle: "italic", color: "text.secondary",
-                  bgcolor: "rgba(99,102,241,0.04)", borderRadius: "0 8px 8px 0",
+                  fontSize: "1.3rem",
                 },
                 "& pre": {
-                  background: "#0f1117", color: "#e2e8f0",
-                  fontFamily: "'JetBrains Mono','Fira Code',monospace",
-                  fontSize: "0.88rem", padding: "1.25rem 1.5rem",
-                  borderRadius: "10px", overflowX: "auto", my: "1.5em", lineHeight: 1.7,
+                  background: "#f8fafc", color: "#1e293b",
+                  fontFamily: "'JetBrains Mono',monospace",
+                  fontSize: "0.9rem", padding: "1.5rem",
+                  borderRadius: "8px", overflowX: "auto", my: "2em", border: "1px solid #e2e8f0",
                   "& code": { color: "inherit", padding: 0, background: "none" },
                 },
                 "& code": {
-                  background: "rgba(99,102,241,0.08)", color: "#6366f1",
-                  padding: "0.15em 0.45em", borderRadius: "5px",
-                  fontSize: "0.88em", fontFamily: "'JetBrains Mono',monospace",
+                  background: "#f1f5f9", color: "#0f172a",
+                  padding: "0.2em 0.4em", borderRadius: "4px",
+                  fontSize: "0.9em", fontFamily: "'JetBrains Mono',monospace",
                 },
-                "& img": { maxWidth: "100%", height: "auto", borderRadius: "10px", display: "block", my: "1.5em" },
-                "& hr": { border: 0, borderTop: "2px solid", borderColor: "divider", my: "2.5em" },
+                "& img": { maxWidth: "100%", height: "auto", borderRadius: "8px", display: "block", my: "2.5em" },
+                "& hr": { border: 0, borderTop: "1px solid", borderColor: "divider", my: "3em" },
               },
             }}
           >
             <EditorContent editor={editor} />
           </Box>
-        </Box>
 
-        {/* Status bar */}
-        <Box sx={{ px: 3, py: 1, borderTop: "1px solid", borderColor: "divider", bgcolor: "background.paper", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <Stack direction="row" alignItems="center" spacing={0.75}>
-            <FiberManualRecord sx={{ fontSize: 8, color: "success.main" }} />
-            <Typography variant="caption" color="text.secondary">{savedLabel}</Typography>
-          </Stack>
-          <Button
-            variant="contained" size="small"
-            onClick={() => setPublishOpen(true)}
-            sx={{ borderRadius: 99, px: 3, py: 0.75, fontWeight: 600, textTransform: "none", fontSize: "0.85rem", boxShadow: "none", bgcolor: "#111827", "&:hover": { bgcolor: "#1f2937", boxShadow: "none" } }}
-          >
-            Publish
-          </Button>
+          {/* Status bar */}
+          <Box sx={{ px: { xs: 3, md: 12 }, py: 4, mt: "auto", borderTop: "1px solid", borderColor: "divider" }}>
+            <Box sx={{ maxWidth: 900, mx: "auto", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              {savedLabel && (
+                <Stack direction="row" alignItems="center" spacing={1.5}>
+                  <Box sx={{ width: 8, height: 8, borderRadius: "50%", bgcolor: savedAt ? "success.main" : "warning.main" }} />
+                  <Typography variant="body2" sx={{ color: "text.secondary", fontWeight: 500 }}>{savedLabel}</Typography>
+                </Stack>
+              )}
+              <Button
+                variant="contained" size="large"
+                onClick={() => setPublishOpen(true)}
+                disabled={publishing}
+                sx={{ borderRadius: 2, px: 4, py: 1, fontWeight: 700, textTransform: "none", fontSize: "0.95rem", boxShadow: "none", bgcolor: "#18181b", "&:hover": { bgcolor: "#000000", boxShadow: "none" } }}
+              >
+                {publishing ? <CircularProgress size={20} color="inherit" /> : "Ready to publish?"}
+              </Button>
+            </Box>
+          </Box>
         </Box>
 
         <input type="file" ref={fileInputRef} style={{ display: "none" }} accept="image/*" onChange={handleFileChange} />
@@ -714,37 +923,28 @@ function Blog() {
             </Box>
 
             {/* Right */}
-            <Box sx={{ width: 320, px: 3.5, py: 3.5, display: "flex", flexDirection: "column", gap: 2.5, bgcolor: "#fafafa" }}>
+            <Box sx={{ width: 340, px: 4, py: 4, display: "flex", flexDirection: "column", gap: 3, bgcolor: "#fafafa" }}>
               <Box>
-                <Typography variant="subtitle2" fontWeight={700} mb={0.5}>Topics</Typography>
-                <Typography variant="body2" color="text.secondary" mb={1.5} sx={{ fontSize: "0.82rem" }}>Add up to 5 topics to help readers discover your story.</Typography>
+                <Typography variant="subtitle2" fontWeight={700} mb={1}>Topics</Typography>
+                <Typography variant="body2" color="text.secondary" mb={2} sx={{ fontSize: "0.825rem", lineHeight: 1.5 }}>Add up to 5 topics to help readers discover your story.</Typography>
                 <InputBase
-                  fullWidth placeholder={topics.length >= 5 ? "Limit reached" : "Add a topic and press Enter…"}
+                  fullWidth placeholder={topics.length >= 5 ? "Limit reached" : "Add a topic…"}
                   value={topicInput} disabled={topics.length >= 5}
                   onChange={(e) => setTopicInput(e.target.value)} onKeyDown={handleAddTopic}
-                  sx={{ border: "1px solid", borderColor: "divider", borderRadius: 1.5, px: 1.5, py: 0.75, fontSize: "0.88rem", bgcolor: "background.paper", mb: 1.5, transition: "border-color 0.2s" }}
+                  sx={{ border: "1px solid", borderColor: "divider", borderRadius: 1.5, px: 1.5, py: 1, fontSize: "0.9rem", bgcolor: "background.paper", mb: 2, transition: "all 0.2s", "&:focus-within": { borderColor: "primary.main", boxShadow: "0 0 0 2px rgba(24,24,27,0.05)" } }}
                 />
-                <Stack direction="row" flexWrap="wrap" gap={0.75}>
-                  {topics.map((t) => <Chip key={t} label={t} size="small" onDelete={() => setTopics(topics.filter((x) => x !== t))} sx={{ borderRadius: 1, fontSize: "0.8rem" }} />)}
+                <Stack direction="row" flexWrap="wrap" gap={1}>
+                  {topics.map((t) => <Chip key={t} label={t} size="small" onDelete={() => setTopics(topics.filter((x) => x !== t))} sx={{ borderRadius: 1, fontSize: "0.8rem", fontWeight: 600, bgcolor: "rgba(0,0,0,0.05)", border: "none", "& .MuiChip-deleteIcon": { fontSize: 14 } }} />)}
                 </Stack>
               </Box>
-
-              <Divider />
-
-              <Box>
-                <Typography variant="subtitle2" fontWeight={700} mb={0.5}>Publication</Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ fontSize: "0.82rem" }}>Your story will be published to your profile and listed in connected feeds.</Typography>
-              </Box>
-
-              <Box sx={{ mt: "auto", pt: 1 }}>
+              
+              <Box sx={{ mt: "auto", pt: 2 }}>
                 <Button fullWidth variant="contained" onClick={handlePublishClick}
-                  sx={{ borderRadius: 99, py: 1, fontWeight: 700, textTransform: "none", fontSize: "0.9rem", boxShadow: "none", bgcolor: previewTitle.trim() ? "#111827" : undefined, "&:hover": { boxShadow: "none", bgcolor: previewTitle.trim() ? "#1f2937" : undefined } }}
+                  sx={{ borderRadius: 1.5, py: 1.2, fontWeight: 700, textTransform: "none", fontSize: "0.95rem", boxShadow: "none", bgcolor: previewTitle.trim() ? "#18181b" : undefined, "&:hover": { boxShadow: "none", bgcolor: previewTitle.trim() ? "#000000" : undefined } }}
                 >
                   Publish now
                 </Button>
-                <Button fullWidth variant="text" sx={{ mt: 1, borderRadius: 99, textTransform: "none", fontSize: "0.85rem", color: "text.secondary" }}>
-                  Schedule for later
-                </Button>
+
               </Box>
             </Box>
           </Box>

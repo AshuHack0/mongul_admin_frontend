@@ -360,7 +360,6 @@ const MentorApplicationDetail = () => {
           sx={{
             width: "100%",
             minHeight: variant === "inline" ? 500 : 540,
-            border: 0,
             borderRadius: 2,
             boxShadow: (t) => t.shadows[1],
             border: variant === "inline" ? "1px solid" : 0,
