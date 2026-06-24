@@ -1,6 +1,4 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { setupListeners } from "@reduxjs/toolkit/query";
-import { api } from "./api/apiSlice";
 import authReducer from "./slices/authSlice";
 import uiReducer from "./slices/uiSlice";
 
@@ -10,7 +8,6 @@ import uiReducer from "./slices/uiSlice";
  */
 export const store = configureStore({
   reducer: {
-    [api.reducerPath]: api.reducer,
     auth: authReducer,
     ui: uiReducer,
   },
@@ -19,11 +16,8 @@ export const store = configureStore({
       serializableCheck: {
         ignoredActions: ["persist/PERSIST", "persist/REHYDRATE"],
       },
-    }).concat(api.middleware),
+    }),
   devTools: process.env.NODE_ENV !== "production",
 });
-
-// Enable refetchOnFocus/refetchOnReconnect behaviors
-setupListeners(store.dispatch);
 
 export default store;

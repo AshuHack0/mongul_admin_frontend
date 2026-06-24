@@ -1,10 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Alert, Stack } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import SideBarLayout from "../layout/SideBarLayout";
-import MentorsHeader from "../components/mentors/MentorsHeader";
-import MentorsTable from "../components/mentors/MentorsTable";
-import { fetchMentorsThunk } from "../store/thunks/mentorsThunks";
+import MentorApplicationsHeader from "../components/mentorApplications/MentorApplicationsHeader";
+import MentorApplicationsTable from "../components/mentorApplications/MentorApplicationsTable";
+import { fetchMentorApplicationsThunk } from "../store/thunks/mentorApplicationsThunks";
 
 const DEFAULT_LIMIT = 10;
 
@@ -24,9 +25,10 @@ const formatDateTime = (value) => {
   }
 };
 
-const Mentors = () => {
+const MentorApplications = () => {
   const dispatch = useDispatch();
-  const [mentors, setMentors] = useState([]);
+  const navigate = useNavigate();
+  const [applications, setApplications] = useState([]);
   const [pagination, setPagination] = useState({
     page: 1,
     limit: DEFAULT_LIMIT,
@@ -36,26 +38,27 @@ const Mentors = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const header = useMemo(() => <MentorsHeader />, []);
+  const header = useMemo(() => <MentorApplicationsHeader />, []);
 
-  const fetchMentors = useCallback(
+  const fetchApplications = useCallback(
     async ({ page = 1, limit = DEFAULT_LIMIT } = {}) => {
       setLoading(true);
       setError(null);
 
       try {
-        const { mentors: nextMentors, pagination: nextPagination } =
-          await dispatch(fetchMentorsThunk({ page, limit })).unwrap();
+        const { applications: nextApplications, pagination: nextPagination } =
+          await dispatch(
+            fetchMentorApplicationsThunk({ page, limit })
+          ).unwrap();
 
-        setMentors(nextMentors);
+        setApplications(nextApplications);
         setPagination((prev) => ({
           ...prev,
           ...nextPagination,
         }));
       } catch (message) {
         setError(message);
-        setMentors([]);
-        setPagination((prev) => ({ ...prev, page: 1, total: 0 }));
+        setApplications([]);
       } finally {
         setLoading(false);
       }
@@ -64,17 +67,22 @@ const Mentors = () => {
   );
 
   useEffect(() => {
-    fetchMentors({ page: pagination.page, limit: pagination.limit });
-  }, [fetchMentors, pagination.limit, pagination.page]);
+    fetchApplications({ page: pagination.page, limit: pagination.limit });
+  }, [fetchApplications]);
 
   const handleChangePage = (_event, newPageIndex) => {
     const nextPage = newPageIndex + 1;
-    fetchMentors({ page: nextPage, limit: pagination.limit });
+    fetchApplications({ page: nextPage, limit: pagination.limit });
   };
 
   const handleChangeRowsPerPage = (event) => {
     const nextLimit = parseInt(event.target.value, 10);
-    fetchMentors({ page: 1, limit: nextLimit });
+    fetchApplications({ page: 1, limit: nextLimit });
+  };
+
+  const handleSelectApplication = (applicationId) => {
+    if (!applicationId) return;
+    navigate(`/mentor-applications/${applicationId}`);
   };
 
   return (
@@ -84,14 +92,15 @@ const Mentors = () => {
           <Alert
             severity="error"
             onClose={() => setError(null)}
-            data-testid="mentors-error"
+            data-testid="mentor-applications-error"
           >
             {error}
           </Alert>
         )}
-        <MentorsTable
-          mentors={mentors}
+        <MentorApplicationsTable
+          applications={applications}
           loading={loading}
+          onSelect={handleSelectApplication}
           pagination={pagination}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
@@ -102,6 +111,5 @@ const Mentors = () => {
   );
 };
 
-export default Mentors;
-
+export default MentorApplications;
 

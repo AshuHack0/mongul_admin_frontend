@@ -1,661 +1,412 @@
-/* Dashboard Container */
-.container {
-    padding: 24px 32px;
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    min-height: 100vh;
-    position: relative;
-    overflow-x: hidden;
-  }
-  
-  .container::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.03"%3E%3Ccircle cx="30" cy="30" r="2"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');
-    pointer-events: none;
-    z-index: 0;
-  }
-  
-  /* Header Section */
-  .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 32px;
-    flex-direction: column;
-    gap: 16px;
-    position: relative;
-    z-index: 1;
-  }
-  
-  .title {
-    font-weight: 800 !important;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-    background-clip: text !important;
-    -webkit-background-clip: text !important;
-    -webkit-text-fill-color: transparent !important;
-    margin-bottom: 8px !important;
-    font-size: 2.5rem !important;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  }
-  
-  .subtitle {
-    font-weight: 500 !important;
-    color: #64748b !important;
-    font-size: 1.1rem !important;
-  }
-  
-  /* Stats Grid */
-  .statsGrid {
-    margin-bottom: 32px !important;
-  }
-  
-  /* Stat Cards */
-  .statCard {
-    height: 100% !important;
-    background: rgba(255, 255, 255, 0.9) !important;
-    backdrop-filter: blur(10px) !important;
-    border: 1px solid rgba(255, 255, 255, 0.2) !important;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
-    transition: all 0.3s ease !important;
-    border-radius: 16px !important;
-    overflow: hidden;
-  }
-  
-  .statCard:hover {
-    transform: translateY(-4px) !important;
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15) !important;
-  }
-  
-  .statContent {
-    padding: 24px !important;
-  }
-  
-  .statHeader {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-  }
-  
-  .statInfo {
-    flex: 1;
-  }
-  
-  .statTitle {
-    font-weight: 600 !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.5px !important;
-    color: #64748b !important;
-    margin-bottom: 16px !important;
-    font-size: 0.875rem !important;
-  }
-  
-  .statValue {
-    font-weight: 800 !important;
-    margin-bottom: 16px !important;
-    font-size: 2.5rem !important;
-    line-height: 1 !important;
-  }
-  
-  .statChange {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  
-  .trendIcon {
-    color: #4caf50 !important;
-    font-size: 18px !important;
-  }
-  
-  .changeText {
-    color: #4caf50 !important;
-    font-weight: 700 !important;
-    font-size: 0.875rem !important;
-  }
-  
-  .changeLabel {
-    color: #64748b !important;
-    font-weight: 500 !important;
-    font-size: 0.875rem !important;
-  }
-  
-  .statAvatar {
-    width: 64px !important;
-    height: 64px !important;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
-    border-radius: 16px !important;
-  }
-  
-  /* General Cards */
-  .card {
-    height: 100% !important;
-    background: rgba(255, 255, 255, 0.9) !important;
-    backdrop-filter: blur(10px) !important;
-    border: 1px solid rgba(255, 255, 255, 0.2) !important;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
-    border-radius: 16px !important;
-    overflow: hidden;
-  }
-  
-  .cardContent {
-    padding: 24px !important;
-  }
-  
-  .cardHeader {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px;
-  }
-  
-  .cardTitle {
-    font-weight: 700 !important;
-    display: flex !important;
-    align-items: center !important;
-    gap: 8px !important;
-    color: #2c3e50 !important;
-    font-size: 1.25rem !important;
-  }
-  
-  .cardIcon {
-    color: #667eea !important;
-    font-size: 1.5rem !important;
-  }
-  
-  /* Session List */
-  .sessionList {
-    padding: 0 !important;
-  }
-  
-  .sessionItem {
-    padding: 0 0 16px 0 !important;
-  }
-  
-  .sessionAvatar {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-    font-weight: 600 !important;
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3) !important;
-    border-radius: 12px !important;
-  }
-  
-  .sessionHeader {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .sessionTitle {
-    font-weight: 600 !important;
-    color: #2c3e50 !important;
-    font-size: 1rem !important;
-  }
-  
-  .sessionDetails {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: 4px;
-  }
-  
-  .programName {
-    color: #64748b !important;
-    font-weight: 500 !important;
-    font-size: 0.875rem !important;
-  }
-  
-  .sessionTime {
-    color: #64748b !important;
-    font-size: 0.875rem !important;
-  }
-  
-  .statusChip {
-    font-weight: 600 !important;
-    font-size: 0.75rem !important;
-    border-radius: 8px !important;
-  }
-  
-  /* Mentor List */
-  .mentorList {
-    padding: 0 !important;
-  }
-  
-  .mentorItem {
-    padding: 0 0 16px 0 !important;
-  }
-  
-  .mentorAvatar {
-    font-weight: 700 !important;
-    font-size: 0.9rem !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
-    border-radius: 12px !important;
-  }
-  
-  .rank1 {
-    background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%) !important;
-  }
-  
-  .rank2 {
-    background: linear-gradient(135deg, #c0c0c0 0%, #e5e5e5 100%) !important;
-  }
-  
-  .rank3 {
-    background: linear-gradient(135deg, #cd7f32 0%, #daa520 100%) !important;
-  }
-  
-  .rank4 {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-  }
-  
-  .mentorName {
-    font-weight: 600 !important;
-    color: #2c3e50 !important;
-    font-size: 1rem !important;
-  }
-  
-  .mentorDetails {
-    margin-top: 4px;
-  }
-  
-  .mentorRating {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 4px;
-  }
-  
-  .starIcon {
-    color: #ffc107 !important;
-    font-size: 18px !important;
-  }
-  
-  .ratingText {
-    font-weight: 700 !important;
-    color: #2c3e50 !important;
-    font-size: 0.875rem !important;
-  }
-  
-  .specialty {
-    color: #64748b !important;
-    font-weight: 500 !important;
-    font-size: 0.875rem !important;
-  }
-  
-  .mentorStats {
-    color: #64748b !important;
-    font-weight: 500 !important;
-    font-size: 0.75rem !important;
-  }
-  
-  /* View All Buttons */
-  .viewAllButton {
-    margin-top: 24px;
-    text-align: center;
-  }
-  
-  .viewButton {
-    color: #667eea !important;
-    font-weight: 600 !important;
-    text-transform: none !important;
-    font-size: 0.875rem !important;
-  }
-  
-  .viewButton:hover {
-    background-color: rgba(102, 126, 234, 0.04) !important;
-  }
-  
-  /* Status Chips */
-  .statusChips {
-    display: flex;
-    gap: 8px;
-  }
-  
-  .approvedChip {
-    background-color: #e8f5e8 !important;
-    color: #2e7d32 !important;
-    font-weight: 600 !important;
-    border-radius: 8px !important;
-  }
-  
-  .reviewChip {
-    background-color: #fff3e0 !important;
-    color: #f57c00 !important;
-    font-weight: 600 !important;
-    border-radius: 8px !important;
-  }
-  
-  /* Mentor Cards */
-  .mentorCard {
-    background: rgba(255, 255, 255, 0.7) !important;
-    border: 1px solid rgba(255, 255, 255, 0.3) !important;
-    transition: all 0.3s ease !important;
-    border-radius: 16px !important;
-    overflow: hidden;
-  }
-  
-  .mentorCard:hover {
-    transform: translateY(-2px) !important;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1) !important;
-  }
-  
-  .mentorCardContent {
-    padding: 20px !important;
-  }
-  
-  .mentorCardHeader {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin-bottom: 16px;
-  }
-  
-  .mentorCardAvatar {
-    width: 56px !important;
-    height: 56px !important;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-    font-weight: 600 !important;
-    font-size: 1.2rem !important;
-    border-radius: 12px !important;
-  }
-  
-  .statusBadge {
-    width: 20px !important;
-    height: 20px !important;
-    font-size: 0.7rem !important;
-    border-radius: 50% !important;
-  }
-  
-  .mentorCardInfo {
-    flex: 1;
-  }
-  
-  .mentorCardName {
-    font-weight: 700 !important;
-    color: #2c3e50 !important;
-    margin-bottom: 4px !important;
-    font-size: 1.125rem !important;
-  }
-  
-  .mentorCardRole {
-    color: #64748b !important;
-    font-weight: 500 !important;
-    font-size: 0.875rem !important;
-  }
-  
-  .mentorCardDetails {
-    margin-bottom: 16px;
-  }
-  
-  .targetSpecialty {
-    font-weight: 600 !important;
-    color: #2c3e50 !important;
-    margin-bottom: 8px !important;
-    font-size: 0.875rem !important;
-  }
-  
-  .experience {
-    color: #64748b !important;
-    font-weight: 500 !important;
-    font-size: 0.75rem !important;
-  }
-  
-  .progressSection {
-    margin-bottom: 16px;
-  }
-  
-  .progressHeader {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-  }
-  
-  .progressLabel {
-    font-weight: 600 !important;
-    color: #2c3e50 !important;
-    font-size: 0.875rem !important;
-  }
-  
-  .progressValue {
-    font-weight: 700 !important;
-    color: #667eea !important;
-    font-size: 0.875rem !important;
-  }
-  
-  .progressBar {
-    height: 8px !important;
-    border-radius: 4px !important;
-    background-color: rgba(0,0,0,0.08) !important;
-  }
-  
-  .progressBar .MuiLinearProgress-bar {
-    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%) !important;
-    border-radius: 4px !important;
-  }
-  
-  .skillsSection {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-    margin-bottom: 16px;
-  }
-  
-  .skillChip {
-    font-size: 0.7rem !important;
-    background-color: rgba(102, 126, 234, 0.1) !important;
-    color: #667eea !important;
-    font-weight: 500 !important;
-    border-radius: 8px !important;
-  }
-  
-  .moreSkillsChip {
-    font-size: 0.7rem !important;
-    background-color: rgba(0,0,0,0.1) !important;
-    color: #64748b !important;
-    font-weight: 500 !important;
-    border-radius: 8px !important;
-  }
-  
-  .mentorCardFooter {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .ratingSection {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  
-  .ratingStar {
-    color: #ffc107 !important;
-    font-size: 16px !important;
-  }
-  
-  .ratingValue {
-    font-weight: 600 !important;
-    color: #2c3e50 !important;
-    font-size: 0.875rem !important;
-  }
-  
-  .reviewButton {
-    margin-top: 32px;
-    text-align: center;
-  }
-  
-  .reviewAllButton {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3) !important;
-    border-radius: 12px !important;
-    text-transform: none !important;
-    font-weight: 600 !important;
-    font-size: 0.875rem !important;
-    padding: 12px 24px !important;
-  }
-  
-  .reviewAllButton:hover {
-    background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%) !important;
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4) !important;
-  }
-  
-  /* Program Cards */
-  .programCard {
-    padding: 16px !important;
-    border-radius: 12px !important;
-    background: rgba(255, 255, 255, 0.5) !important;
-    border: 1px solid rgba(255, 255, 255, 0.3) !important;
-  }
-  
-  .programHeader {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
-  }
-  
-  .programName {
-    font-weight: 700 !important;
-    color: #2c3e50 !important;
-    font-size: 1rem !important;
-  }
-  
-  .programProgress {
-    font-weight: 800 !important;
-    font-size: 1.25rem !important;
-  }
-  
-  .programProgressBar {
-    height: 10px !important;
-    border-radius: 5px !important;
-    background-color: rgba(0,0,0,0.08) !important;
-    margin-bottom: 16px !important;
-  }
-  
-  .programProgressBar .MuiLinearProgress-bar {
-    background: linear-gradient(90deg, var(--progress-color) 0%, var(--progress-color)dd 100%) !important;
-    border-radius: 5px !important;
-    box-shadow: 0 2px 8px var(--progress-color)40 !important;
-  }
-  
-  .programStats {
-    display: flex;
-    justify-content: space-between;
-  }
-  
-  .enrolledCount {
-    color: #64748b !important;
-    font-weight: 600 !important;
-    font-size: 0.75rem !important;
-  }
-  
-  .completedCount {
-    color: #64748b !important;
-    font-weight: 600 !important;
-    font-size: 0.75rem !important;
-  }
-  
-  /* Responsive Design */
-  @media screen and (max-width: 1200px) {
-    .container {
-      padding: 16px;
-    }
-    
-    .title {
-      font-size: 2rem !important;
-    }
-    
-    .statValue {
-      font-size: 2rem !important;
-    }
-  }
-  
-  @media screen and (max-width: 768px) {
-    .container {
-      padding: 12px;
-    }
-    
-    .title {
-      font-size: 1.75rem !important;
-    }
-    
-    .statContent {
-      padding: 16px !important;
-    }
-    
-    .cardContent {
-      padding: 16px !important;
-    }
-    
-    .mentorCardContent {
-      padding: 16px !important;
-    }
-  }
-  
-  /* Animations */
-  @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  
-  .statCard,
-  .card,
-  .mentorCard,
-  .programCard {
-    animation: fadeInUp 0.6s ease-out;
-  }
-  
-  .statCard:nth-child(1) { animation-delay: 0.1s; }
-  .statCard:nth-child(2) { animation-delay: 0.2s; }
-  .statCard:nth-child(3) { animation-delay: 0.3s; }
-  .statCard:nth-child(4) { animation-delay: 0.4s; }
-  
-  /* Hover Effects */
-  .statCard:hover .statAvatar,
-  .mentorCard:hover .mentorCardAvatar {
-    transform: scale(1.05);
-    transition: transform 0.3s ease;
-  }
-  
-  /* Glass Morphism Enhancement */
-  .card::before,
-  .statCard::before,
-  .mentorCard::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
-    pointer-events: none;
-    border-radius: inherit;
-  }
-  
-  /* Custom Scrollbar */
-  .container::-webkit-scrollbar {
-    width: 8px;
-  }
-  
-  .container::-webkit-scrollbar-track {
-    background: rgba(255,255,255,0.1);
-    border-radius: 4px;
-  }
-  
-  .container::-webkit-scrollbar-thumb {
-    background: rgba(102, 126, 234, 0.3);
-    border-radius: 4px;
-  }
-  
-  .container::-webkit-scrollbar-thumb:hover {
-    background: rgba(102, 126, 234, 0.5);
-  } 
+/* ── Root layout ────────────────────────────────────── */
+.dashboard {
+  display: flex;
+  height: 100vh;
+  background: #f5f5f5;
+  overflow: hidden;
+}
+
+/* ── Sidebar ─────────────────────────────────────────── */
+.sidebar {
+  width: 232px;
+  background: #111111;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  flex-shrink: 0;
+}
+
+.sidebarContent {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 16px 10px 14px;
+}
+
+/* Brand */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  margin-bottom: 8px;
+}
+
+.brandIconWrap {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.brandName {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.2px;
+}
+
+/* Nav section label */
+.navSection {
+  display: block;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.25);
+  padding: 12px 8px 4px;
+}
+
+/* Nav */
+.navList {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex: 1;
+}
+
+.navLink {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 8px;
+  color: rgba(255, 255, 255, 0.45);
+  text-decoration: none;
+  border-radius: 5px;
+  font-size: 0.825rem;
+  font-weight: 500;
+  transition: background 0.1s, color 0.1s;
+  line-height: 1;
+}
+
+.navLink:hover {
+  background: rgba(255, 255, 255, 0.07);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.activeNavLink {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.activeNavLink:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+}
+
+.navIcon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  opacity: 0.6;
+}
+
+.activeNavLink .navIcon {
+  opacity: 1;
+}
+
+/* Sidebar footer */
+.sidebarFooter {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.userProfileBtn {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.1s;
+  width: 100%;
+  border: none;
+  background: none;
+  text-align: left;
+}
+
+.userProfileBtn:hover {
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.sidebarAvatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 5px;
+  background: #3f3f46;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.sidebarUserInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.sidebarUserName {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebarUserRole {
+  font-size: 0.6875rem;
+  color: rgba(255, 255, 255, 0.25);
+  line-height: 1.3;
+}
+
+.logoutIcon {
+  color: rgba(255, 255, 255, 0.2) !important;
+  font-size: 14px !important;
+  flex-shrink: 0;
+  transition: color 0.1s;
+}
+
+.userProfileBtn:hover .logoutIcon {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* ── Content area ────────────────────────────────────── */
+.contentArea {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+  min-width: 0;
+}
+
+/* ── Top header bar ──────────────────────────────────── */
+.header {
+  background: #ffffff;
+  padding: 0 24px;
+  border-bottom: 1px solid #e5e5e5;
+  flex-shrink: 0;
+  height: 56px;
+  display: flex;
+  align-items: center;
+}
+
+.headerBar {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 16px;
+}
+
+.headerLeft {
+  flex: 1;
+  min-width: 0;
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.headerDate {
+  font-size: 0.775rem;
+  color: #a1a1aa;
+  padding-right: 4px;
+  white-space: nowrap;
+}
+
+.iconBtn {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 1px solid #e5e5e5;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #71717a;
+  transition: background 0.1s, color 0.1s;
+}
+
+.iconBtn:hover {
+  background: #f5f5f5;
+  color: #18181b;
+}
+
+.headerAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: #18181b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* ── Page header (inside headerLeft) ─────────────────── */
+.pageHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.pageTitle {
+  font-size: 0.9rem !important;
+  font-weight: 600 !important;
+  color: #111111 !important;
+  line-height: 1.3 !important;
+}
+
+.pageSubtitle {
+  font-size: 0.775rem !important;
+  color: #a1a1aa !important;
+  line-height: 1.3 !important;
+}
+
+/* ── Main content ────────────────────────────────────── */
+.main {
+  flex: 1;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  overflow-y: auto;
+}
+
+.noPadding {
+  padding: 0;
+  gap: 0;
+}
+
+/* ── Dashboard empty state ──────────────────────────── */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex: 1;
+  padding: 64px 32px;
+  text-align: center;
+}
+
+.emptyIconWrap {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  background: #f4f4f5;
+  border: 1px solid #e5e5e5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 6px;
+}
+
+.emptyTitle {
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  color: #111111 !important;
+}
+
+.emptySubtitle {
+  font-size: 0.8375rem !important;
+  color: #a1a1aa !important;
+  max-width: 280px;
+  line-height: 1.6 !important;
+}
+
+/* ── Shared card primitives ──────────────────────────── */
+.statCard {
+  border-radius: 8px;
+  background: #ffffff;
+  border: 1px solid #e5e5e5;
+}
+
+.cardLabel {
+  color: #71717a;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+}
+
+.cardValue {
+  margin: 6px 0;
+  font-weight: 700;
+  color: #111111;
+}
+
+.cardChip {
+  margin-bottom: 10px;
+}
+
+.cardDescription {
+  color: #a1a1aa;
+  font-size: 0.8125rem;
+}
+
+.sectionCard {
+  border-radius: 8px;
+  background: #ffffff;
+  border: 1px solid #e5e5e5;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.sectionTitle {
+  font-weight: 600;
+  color: #111111;
+}
+
+.sectionSubtitle {
+  color: #71717a;
+  font-size: 0.8125rem;
+}
+
+.statsGrid {
+  margin-bottom: 4px;
+}
+
+/* ── Responsive ─────────────────────────────────────── */
+@media (max-width: 1200px) {
+  .sidebar { width: 216px; }
+}
+
+@media (max-width: 992px) {
+  .dashboard { flex-direction: column; height: auto; overflow: visible; }
+  .sidebar { width: 100%; height: auto; }
+  .contentArea { height: auto; overflow: visible; }
+  .header { padding: 0 18px; }
+  .main { padding: 18px; overflow: visible; }
+  .headerDate { display: none; }
+}
+
+@media (max-width: 600px) {
+  .main { padding: 14px; }
+}

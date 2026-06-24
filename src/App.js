@@ -1,319 +1,212 @@
-import React, { useState, useEffect } from "react";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-  useLocation,
-} from "react-router-dom";
-import {
-  Box,
-  CssBaseline,
-  ThemeProvider,
-  createTheme,
-  Typography,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-} from "@mui/material";
-import { Computer, Smartphone } from "@mui/icons-material";
+import React from "react";
+import { BrowserRouter as Router } from "react-router-dom";
+import { CssBaseline, ThemeProvider, createTheme } from "@mui/material";
 import { Provider } from "react-redux";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 import store from "./store";
-import AuthFlow from "./pages/AuthFlow";
-import Dashboard from "./pages/Dashboard";
-import Mentors from "./pages/Mentors";
-import Mentees from "./pages/Mentees";
-import Programs from "./pages/Programs";
-import Sessions from "./pages/Sessions";
-import Analytics from "./pages/Analytics";
-import Payments from "./pages/Payments";
-import Reports from "./pages/Reports";
-import Support from "./pages/Support";
-import Settings from "./pages/Settings";
-import Rooms from "./pages/Rooms";
-import Sidebar from "./components/Sidebar";
-import NotificationSystem from "./components/NotificationSystem";
+import { AuthGate } from "./layout/AuthGate";
+import AppRoutes from "./routes/AppRoutes";
+import { GOOGLE_CLIENT_ID } from "./config/google";
 
 const theme = createTheme({
   palette: {
     primary: {
-      main: "#667eea",
+      main: "#18181b",
+      light: "#52525b",
+      dark: "#000000",
+      contrastText: "#ffffff",
     },
     secondary: {
-      main: "#764ba2",
+      main: "#71717a",
+      contrastText: "#ffffff",
     },
+    background: {
+      default: "#f5f5f5",
+      paper: "#ffffff",
+    },
+    text: {
+      primary: "#111111",
+      secondary: "#6b7280",
+    },
+    divider: "#e5e5e5",
   },
   typography: {
     fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+    h4: { fontWeight: 700 },
+    h5: { fontWeight: 700 },
+    h6: { fontWeight: 600 },
+    subtitle1: { fontWeight: 500 },
+    button: { fontWeight: 600, letterSpacing: 0 },
   },
+  shape: {
+    borderRadius: 8,
+  },
+  shadows: [
+    "none",
+    "0 1px 2px rgba(0,0,0,0.06)",
+    "0 1px 4px rgba(0,0,0,0.08)",
+    "0 2px 8px rgba(0,0,0,0.08)",
+    "0 4px 12px rgba(0,0,0,0.08)",
+    "0 4px 16px rgba(0,0,0,0.10)",
+    ...Array(19).fill("none"),
+  ],
   components: {
+    MuiCssBaseline: {
+      styleOverrides: {
+        "*": { boxSizing: "border-box" },
+        body: { backgroundColor: "#f5f5f5" },
+      },
+    },
     MuiCard: {
+      defaultProps: { elevation: 0 },
       styleOverrides: {
         root: {
-          borderRadius: 12,
-          boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+          borderRadius: 8,
+          border: "1px solid #e5e5e5",
+          boxShadow: "none",
+        },
+      },
+    },
+    MuiPaper: {
+      defaultProps: { elevation: 0 },
+      styleOverrides: {
+        root: {
+          backgroundImage: "none",
+          border: "1px solid #e5e5e5",
+          borderRadius: 8,
         },
       },
     },
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: 8,
+          borderRadius: 6,
           textTransform: "none",
           fontWeight: 600,
+          fontSize: "0.8125rem",
+          boxShadow: "none",
+          "&:hover": { boxShadow: "none" },
+        },
+        contained: {
+          backgroundColor: "#18181b",
+          color: "#ffffff",
+          "&:hover": { backgroundColor: "#000000" },
+        },
+        outlined: {
+          borderColor: "#d4d4d8",
+          color: "#18181b",
+          "&:hover": { borderColor: "#a1a1aa", backgroundColor: "#fafafa" },
+        },
+        text: {
+          color: "#18181b",
+          "&:hover": { backgroundColor: "#f4f4f5" },
         },
       },
     },
-    MuiCssBaseline: {
-      styleOverrides: `
-        @keyframes slideInUp {
-          from {
-            opacity: 0;
-            transform: translateY(50px) scale(0.9);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-          }
-        }
-      `,
+    MuiOutlinedInput: {
+      styleOverrides: {
+        root: {
+          borderRadius: 6,
+          backgroundColor: "#ffffff",
+          "& .MuiOutlinedInput-notchedOutline": { borderColor: "#e5e5e5" },
+          "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#a1a1aa" },
+          "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+            borderColor: "#18181b",
+            borderWidth: 1.5,
+          },
+        },
+        input: { padding: "10px 14px" },
+      },
+    },
+    MuiInputLabel: {
+      styleOverrides: {
+        root: { fontSize: "0.875rem", color: "#6b7280" },
+      },
+    },
+    MuiTableHead: {
+      styleOverrides: {
+        root: {
+          "& .MuiTableCell-head": {
+            backgroundColor: "#fafafa",
+            color: "#52525b",
+            fontWeight: 600,
+            fontSize: "0.7rem",
+            letterSpacing: "0.06em",
+            textTransform: "uppercase",
+            borderBottom: "1px solid #e5e5e5",
+            padding: "11px 16px",
+          },
+        },
+      },
+    },
+    MuiTableCell: {
+      styleOverrides: {
+        root: {
+          borderBottom: "1px solid #f4f4f5",
+          padding: "13px 16px",
+          fontSize: "0.875rem",
+          color: "#111111",
+        },
+      },
+    },
+    MuiTableRow: {
+      styleOverrides: {
+        root: {
+          "&:last-child td": { borderBottom: 0 },
+          "&:hover": { backgroundColor: "#fafafa" },
+        },
+      },
+    },
+    MuiChip: {
+      styleOverrides: {
+        root: {
+          borderRadius: 5,
+          fontWeight: 600,
+          fontSize: "0.7rem",
+        },
+      },
+    },
+    MuiDivider: {
+      styleOverrides: {
+        root: { borderColor: "#e5e5e5" },
+      },
+    },
+    MuiTooltip: {
+      styleOverrides: {
+        tooltip: {
+          borderRadius: 5,
+          fontSize: "0.75rem",
+          backgroundColor: "#111111",
+        },
+      },
+    },
+    MuiDialog: {
+      styleOverrides: {
+        paper: { borderRadius: 10, border: "1px solid #e5e5e5" },
+      },
+    },
+    MuiSelect: {
+      styleOverrides: {
+        icon: { color: "#6b7280" },
+      },
     },
   },
 });
 
-// Component to sync activeTab with current location
-const AppContent = ({ isAuthenticated, setIsAuthenticated }) => {
-  const [activeTab, setActiveTab] = useState("/dashboard");
-  const [isMobile, setIsMobile] = useState(false);
-  const [showMobileDialog, setShowMobileDialog] = useState(false);
-  const location = useLocation();
-
-  // Check if user is on mobile device
-  // useEffect(() => {
-  //   const checkMobile = () => {
-  //     const userAgent = navigator.userAgent.toLowerCase();
-  //     const isMobileDevice = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent);
-  //     const isSmallScreen = window.innerWidth <= 568;
-
-  //     if (isMobileDevice || isSmallScreen) {
-  //       setIsMobile(true);
-  //       setShowMobileDialog(true);
-  //     }
-  //   };
-
-  //   checkMobile();
-  //   window.addEventListener('resize', checkMobile);
-
-  //   return () => window.removeEventListener('resize', checkMobile);
-  // }, []);
-
-  const handleCloseMobileDialog = () => {
-    setShowMobileDialog(false);
-  };
-
-  // Sync activeTab with current location
-  useEffect(() => {
-    setActiveTab(location.pathname);
-  }, [location.pathname]);
-
-  const handleLoginSuccess = (data) => {
-    console.log("Login successful:", data);
-    setIsAuthenticated(true);
-  };
-
-  const handleLogout = () => {
-    // Clear stored data
-    localStorage.removeItem("adminToken");
-    localStorage.removeItem("adminUser");
-    setIsAuthenticated(false);
-    setActiveTab("/dashboard");
-  };
-
-  const handleTabChange = (path) => {
-    setActiveTab(path);
-  };
-
-  if (!isAuthenticated) {
-    return <AuthFlow onLoginSuccess={handleLoginSuccess} />;
-  }
-
-  // Mobile warning dialog
-  if (isMobile) {
-    return (
-      <Dialog
-        open={showMobileDialog}
-        onClose={handleCloseMobileDialog}
-        maxWidth="sm"
-        fullWidth
-        sx={{
-          "& .MuiDialog-paper": {
-            background: "rgba(255, 255, 255, 0.95)",
-            backdropFilter: "blur(20px)",
-            border: "1px solid rgba(255, 255, 255, 0.2)",
-            borderRadius: "20px",
-            boxShadow: "0 20px 60px rgba(0, 0, 0, 0.15)",
-            maxWidth: "500px",
-            width: "90%",
-            margin: "20px",
-            animation: "slideInUp 0.4s ease-out",
-          },
-          "& .MuiBackdrop-root": {
-            background: "rgba(0, 0, 0, 0.6)",
-            backdropFilter: "blur(5px)",
-          },
-        }}
-      >
-        <DialogTitle sx={{ textAlign: "center", p: 4, pb: 2 }}>
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: 2,
-              mb: 2,
-              justifyContent: "center",
-            }}
-          >
-            <Computer sx={{ fontSize: 40, color: "#667eea" }} />
-            <Smartphone sx={{ fontSize: 40, color: "#f093fb" }} />
-          </Box>
-          <Typography
-            variant="h5"
-            sx={{
-              fontWeight: 700,
-              color: "#2c3e50",
-              background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-              backgroundClip: "text",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              fontSize: "1.75rem",
-            }}
-          >
-            Desktop Access Required
-          </Typography>
-        </DialogTitle>
-        <DialogContent sx={{ p: 4, pt: 0 }}>
-          <Typography
-            variant="body1"
-            sx={{ mb: 2, color: "#64748b", lineHeight: 1.6 }}
-          >
-            The Mongul Admin Panel is designed for desktop use to provide the
-            best experience with full functionality.
-          </Typography>
-          <Typography
-            variant="body1"
-            sx={{ mb: 3, color: "#64748b", lineHeight: 1.6 }}
-          >
-            Please access this panel from a desktop computer or laptop for
-            optimal performance and complete feature access.
-          </Typography>
-          <Box
-            sx={{
-              p: 2,
-              background:
-                "linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%)",
-              borderRadius: 2,
-              border: "1px solid rgba(102, 126, 234, 0.2)",
-            }}
-          >
-            <Typography
-              variant="body2"
-              sx={{ fontWeight: 600, color: "#667eea", mb: 1 }}
-            >
-              💡 Recommended:
-            </Typography>
-            <Typography variant="body2" sx={{ color: "#64748b" }}>
-              • Use a desktop computer or laptop
-              <br />
-              • Ensure screen resolution of 1024px or higher
-              <br />• Use a modern web browser (Chrome, Firefox, Safari, Edge)
-            </Typography>
-          </Box>
-        </DialogContent>
-        <DialogActions sx={{ p: 4, pt: 0, justifyContent: "center" }}>
-          <Button
-            onClick={handleCloseMobileDialog}
-            variant="contained"
-            sx={{
-              background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-              color: "white",
-              fontWeight: 600,
-              px: 3,
-              py: 1.5,
-              borderRadius: 2,
-              "&:hover": {
-                background: "linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)",
-              },
-            }}
-          >
-            I Understand
-          </Button>
-        </DialogActions>
-      </Dialog>
-    );
-  }
-
-  return (
-    <Box sx={{ display: "flex" }}>
-      <Sidebar
-        activeTab={activeTab}
-        onTabChange={handleTabChange}
-        onLogout={handleLogout}
-      />
-      <Box
-        component="main"
-        sx={{
-          flexGrow: 1,
-          background: "#f8f9fa",
-          minHeight: "100vh",
-        }}
-      >
-        <Routes>
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/mentors" element={<Mentors />} />
-          <Route path="/mentees" element={<Mentees />} />
-          <Route path="/programs" element={<Programs />} />
-          <Route path="/sessions" element={<Sessions />} />
-          <Route path="/analytics" element={<Analytics />} />
-          <Route path="/payments" element={<Payments />} />
-          <Route path="/reports" element={<Reports />} />
-          <Route path="/support" element={<Support />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/rooms" element={<Rooms />} />
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
-        </Routes>
-      </Box>
-    </Box>
-  );
-};
-
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  // Check for existing authentication on app load
-  useEffect(() => {
-    const token = localStorage.getItem("adminToken");
-    const user = localStorage.getItem("adminUser");
-
-    if (token && user) {
-      setIsAuthenticated(true);
-    }
-  }, []);
-
   return (
-    <Provider store={store}>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <Router>
-          <AppContent
-            isAuthenticated={isAuthenticated}
-            setIsAuthenticated={setIsAuthenticated}
-          />
-          <NotificationSystem />
-        </Router>
-      </ThemeProvider>
-    </Provider>
+    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+      <Provider store={store}>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <AuthGate>
+            <Router>
+              <AppRoutes />
+            </Router>
+          </AuthGate>
+        </ThemeProvider>
+      </Provider>
+    </GoogleOAuthProvider>
   );
 }
 
