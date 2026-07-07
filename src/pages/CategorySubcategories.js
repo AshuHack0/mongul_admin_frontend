@@ -23,12 +23,23 @@ const DEFAULT_FORM_STATE = {
   name: "",
   tags: "",
   order: "",
+  bjEnabled: true,
+  bjIntro: "",
+  bjChecklist: "",
+  bjWarning: "",
+  bjPhone: "",
 };
 
 const parseTags = (value = "") =>
   value
     .split(",")
     .map((tag) => tag.trim())
+    .filter(Boolean);
+
+const parseChecklist = (value = "") =>
+  value
+    .split("\n")
+    .map((item) => item.trim())
     .filter(Boolean);
 
 const CategorySubcategories = () => {
@@ -97,6 +108,7 @@ const CategorySubcategories = () => {
 
     setError(null);
     setSuccessMessage(null);
+    const preCallInfo = subcategory.preCallInfo ?? {};
     setForm({
       name: subcategory.name ?? "",
       tags: Array.isArray(subcategory.tags)
@@ -106,6 +118,13 @@ const CategorySubcategories = () => {
         subcategory.order !== undefined && subcategory.order !== null
           ? String(subcategory.order)
           : "",
+      bjEnabled: preCallInfo.enabled !== false,
+      bjIntro: preCallInfo.introText ?? "",
+      bjChecklist: Array.isArray(preCallInfo.checklist)
+        ? preCallInfo.checklist.join("\n")
+        : "",
+      bjWarning: preCallInfo.warningText ?? "",
+      bjPhone: preCallInfo.helplinePhone ?? "",
     });
     setModalMode("edit");
     setActiveSubcategoryId(subcategory._id ?? null);
@@ -155,6 +174,14 @@ const CategorySubcategories = () => {
     }));
   };
 
+  const handleToggleChange = (field) => (event) => {
+    const { checked } = event.target;
+    setForm((prev) => ({
+      ...prev,
+      [field]: checked,
+    }));
+  };
+
   const handleSubmitSubcategory = async (event) => {
     event.preventDefault();
 
@@ -173,6 +200,13 @@ const CategorySubcategories = () => {
       const payload = {
         name: trimmedName,
         tags: parseTags(form.tags),
+        preCallInfo: {
+          enabled: Boolean(form.bjEnabled),
+          introText: form.bjIntro.trim(),
+          checklist: parseChecklist(form.bjChecklist),
+          warningText: form.bjWarning.trim(),
+          helplinePhone: form.bjPhone.trim(),
+        },
       };
 
       const orderValue =
@@ -286,6 +320,7 @@ const CategorySubcategories = () => {
         mode={modalMode}
         form={form}
         onChange={handleInputChange}
+        onToggle={handleToggleChange}
         onClose={handleCloseModal}
         onSubmit={handleSubmitSubcategory}
         submitting={submitting}
