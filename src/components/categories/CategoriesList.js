@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Chip, Grid, Stack, Typography } from "@mui/material";
+import { Avatar, Button, Chip, Grid, Stack, Typography } from "@mui/material";
 
 const CategoriesList = ({
   categories,
@@ -30,16 +30,30 @@ const CategoriesList = ({
             >
               {/* Title row */}
               <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 10 }}>
-                <Typography
-                  style={{
-                    fontWeight: 600,
-                    fontSize: "0.9375rem",
-                    color: "#111111",
-                    lineHeight: 1.3,
-                  }}
-                >
-                  {category.name}
-                </Typography>
+                <Stack direction="row" spacing={1.25} alignItems="center" style={{ minWidth: 0 }}>
+                  <Avatar
+                    src={category.iconImage || undefined}
+                    variant="rounded"
+                    style={{
+                      width: 36,
+                      height: 36,
+                      backgroundColor: category.color || "#e5e5e5",
+                      flexShrink: 0,
+                    }}
+                  >
+                    {!category.iconImage && (category.name?.charAt(0)?.toUpperCase() || "?")}
+                  </Avatar>
+                  <Typography
+                    style={{
+                      fontWeight: 600,
+                      fontSize: "0.9375rem",
+                      color: "#111111",
+                      lineHeight: 1.3,
+                    }}
+                  >
+                    {category.name}
+                  </Typography>
+                </Stack>
                 <Chip
                   label={`${subcategories.length} sub`}
                   size="small"
@@ -49,9 +63,14 @@ const CategoriesList = ({
               </div>
 
               {/* Meta: icon / color */}
-              {(category.icon || category.color) && (
-                <Stack direction="row" spacing={1.5}>
-                  {category.icon && (
+              {(category.icon || category.color || category.iconImage) && (
+                <Stack direction="row" spacing={1.5} flexWrap="wrap">
+                  {category.iconImage && (
+                    <Typography style={{ fontSize: "0.775rem", color: "#a1a1aa" }}>
+                      Custom PNG icon uploaded
+                    </Typography>
+                  )}
+                  {!category.iconImage && category.icon && (
                     <Typography style={{ fontSize: "0.775rem", color: "#a1a1aa" }}>
                       Icon: {category.icon}
                     </Typography>

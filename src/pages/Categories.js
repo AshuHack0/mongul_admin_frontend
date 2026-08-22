@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { Alert, CircularProgress, Stack } from "@mui/material";
@@ -12,6 +12,7 @@ import {
   fetchCategoriesThunk,
   addCategoryThunk,
   updateCategoryThunk,
+  uploadCategoryIconThunk,
   deleteCategoryThunk,
 } from "../store/thunks/categoriesThunks";
 
@@ -34,9 +35,35 @@ const Categories = () => {
   const [activeCategoryId, setActiveCategoryId] = useState(null);
   const [categoryToDelete, setCategoryToDelete] = useState(null);
   const [deletingCategory, setDeletingCategory] = useState(false);
+  // PNG icon upload state — kept separate from categoryForm since it's a
+  // file, not a plain field, and is saved via its own upload request.
+  const [iconFile, setIconFile] = useState(null);
+  const [iconPreviewUrl, setIconPreviewUrl] = useState(null);
+  const [uploadingIcon, setUploadingIcon] = useState(false);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  // Tracks the object URL we created for the local preview, so we revoke
+  // exactly that (never the remote iconImage URL loaded from the category).
+  const objectUrlRef = useRef(null);
+
+  const clearIconPreview = useCallback(() => {
+    if (objectUrlRef.current) {
+      URL.revokeObjectURL(objectUrlRef.current);
+      objectUrlRef.current = null;
+    }
+    setIconFile(null);
+    setIconPreviewUrl(null);
+  }, []);
+
+  useEffect(() => {
+    // Revoke any pending local preview URL when the component unmounts.
+    return () => {
+      if (objectUrlRef.current) {
+        URL.revokeObjectURL(objectUrlRef.current);
+      }
+    };
+  }, []);
 
   const fetchCategories = useCallback(async () => {
     setLoading(true);
@@ -71,14 +98,16 @@ const Categories = () => {
     setCategoryForm(DEFAULT_CATEGORY_FORM);
     setCategoryModalMode("create");
     setActiveCategoryId(null);
+    clearIconPreview();
     setCategoryModalOpen(true);
-  }, []);
+  }, [clearIconPreview]);
 
   const handleCloseCategoryModal = useCallback(() => {
     if (!savingCategory) {
       setCategoryModalOpen(false);
+      clearIconPreview();
     }
-  }, [savingCategory]);
+  }, [savingCategory, clearIconPreview]);
 
   const handleOpenEditCategoryModal = useCallback((category) => {
     if (!category) {
@@ -98,8 +127,27 @@ const Categories = () => {
     });
     setCategoryModalMode("edit");
     setActiveCategoryId(category._id ?? null);
+    clearIconPreview();
+    setIconPreviewUrl(category.iconImage ?? null);
     setCategoryModalOpen(true);
-  }, []);
+  }, [clearIconPreview]);
+
+  const handleIconFileChange = useCallback(
+    (event) => {
+      const file = event.target.files?.[0];
+      event.target.value = ""; // allow re-selecting the same file later
+      if (!file) return;
+
+      if (objectUrlRef.current) {
+        URL.revokeObjectURL(objectUrlRef.current);
+      }
+      const previewUrl = URL.createObjectURL(file);
+      objectUrlRef.current = previewUrl;
+      setIconFile(file);
+      setIconPreviewUrl(previewUrl);
+    },
+    []
+  );
 
   const handlePromptDeleteCategory = useCallback((category) => {
     setError(null);
@@ -171,15 +219,42 @@ const Categories = () => {
         payload.order = orderValue;
       }
 
-      const message = await (categoryModalMode === "edit"
-        ? dispatch(
-            updateCategoryThunk({ categoryId: activeCategoryId, payload })
-          ).unwrap()
-        : dispatch(addCategoryThunk(payload)).unwrap());
+      let message;
+      let categoryId = activeCategoryId;
+
+      if (categoryModalMode === "edit") {
+        message = await dispatch(
+          updateCategoryThunk({ categoryId: activeCategoryId, payload })
+        ).unwrap();
+      } else {
+        const created = await dispatch(addCategoryThunk(payload)).unwrap();
+        message = created.message;
+        categoryId = created.category?._id ?? null;
+      }
+
+      // Icon upload is a separate request against the now-known categoryId —
+      // its failure shouldn't undo the category save, just surface its own error.
+      if (iconFile && categoryId) {
+        setUploadingIcon(true);
+        try {
+          await dispatch(
+            uploadCategoryIconThunk({ categoryId, file: iconFile })
+          ).unwrap();
+        } catch (iconError) {
+          setError(
+            `Category saved, but the icon upload failed: ${iconError}`
+          );
+        } finally {
+          setUploadingIcon(false);
+        }
+      }
 
       setCategoryForm(DEFAULT_CATEGORY_FORM);
+      clearIconPreview();
       await fetchCategories();
-      setSuccessMessage(message);
+      if (message) {
+        setSuccessMessage(message);
+      }
       setCategoryModalOpen(false);
       setActiveCategoryId(null);
       setCategoryModalMode("create");
@@ -272,6 +347,9 @@ const Categories = () => {
         onClose={handleCloseCategoryModal}
         onSubmit={handleSubmitCategory}
         saving={savingCategory}
+        iconPreviewUrl={iconPreviewUrl}
+        onIconFileChange={handleIconFileChange}
+        uploadingIcon={uploadingIcon}
       />
 
       <DeleteCategoryDialog

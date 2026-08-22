@@ -27,10 +27,36 @@ export const addCategoryThunk = createAsyncThunk(
   async (payload, { rejectWithValue }) => {
     try {
       const { data } = await privateApi.post(API_ENDPOINTS.ADD_CATEGORY, payload);
-      return data?.message || "Category added successfully.";
+      return {
+        message: data?.message || "Category added successfully.",
+        category: data?.category ?? null,
+      };
     } catch (error) {
       return rejectWithValue(
         getErrorMessage(error, "Failed to add category.")
+      );
+    }
+  }
+);
+
+export const uploadCategoryIconThunk = createAsyncThunk(
+  "categories/uploadIcon",
+  async ({ categoryId, file }, { rejectWithValue }) => {
+    try {
+      const formData = new FormData();
+      formData.append("icon", file);
+
+      const { data } = await privateApi.post(
+        API_ENDPOINTS.UPLOAD_CATEGORY_ICON(categoryId),
+        formData
+      );
+      return {
+        message: data?.message || "Category icon uploaded successfully.",
+        category: data?.category ?? null,
+      };
+    } catch (error) {
+      return rejectWithValue(
+        getErrorMessage(error, "Failed to upload category icon.")
       );
     }
   }

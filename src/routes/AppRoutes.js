@@ -11,6 +11,8 @@ import Mentors from "../pages/Mentors";
 import Categories from "../pages/Categories";
 import CategorySubcategories from "../pages/CategorySubcategories";
 import CategoryChangeRequests from "../pages/CategoryChangeRequests";
+import Plans from "../pages/Plans";
+import RevenuePolicy from "../pages/RevenuePolicy";
 import Surveys from "../pages/Surveys";
 import Blog from "../pages/Blog";
 import BlogList from "../pages/BlogList";
@@ -40,6 +42,8 @@ const AppRoutes = () => {
             path="/category-change-requests"
             element={<CategoryChangeRequests />}
           />
+          <Route path="/plans" element={<Plans />} />
+          <Route path="/revenue-policy" element={<RevenuePolicy />} />
           <Route path="/surveys" element={<Surveys />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/list" element={<BlogList />} />

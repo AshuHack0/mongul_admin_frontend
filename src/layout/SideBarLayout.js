@@ -10,6 +10,8 @@ import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
 import CategoryOutlinedIcon from "@mui/icons-material/CategoryOutlined";
 import SwapHorizOutlinedIcon from "@mui/icons-material/SwapHorizOutlined";
 import PollOutlinedIcon from "@mui/icons-material/PollOutlined";
+import PaymentsOutlinedIcon from "@mui/icons-material/PaymentsOutlined";
+import PieChartOutlineOutlinedIcon from "@mui/icons-material/PieChartOutlineOutlined";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import NotificationsNoneOutlinedIcon from "@mui/icons-material/NotificationsNoneOutlined";
@@ -29,6 +31,8 @@ const navSections = [
       { label: "Mentors", icon: <PeopleOutlinedIcon fontSize="small" />, to: "/mentors" },
       { label: "Categories", icon: <CategoryOutlinedIcon fontSize="small" />, to: "/categories" },
       { label: "Category Requests", icon: <SwapHorizOutlinedIcon fontSize="small" />, to: "/category-change-requests" },
+      { label: "Plans", icon: <PaymentsOutlinedIcon fontSize="small" />, to: "/plans" },
+      { label: "Revenue Policy", icon: <PieChartOutlineOutlinedIcon fontSize="small" />, to: "/revenue-policy" },
       { label: "Surveys", icon: <PollOutlinedIcon fontSize="small" />, to: "/surveys" },
     ],
   },
