@@ -168,29 +168,20 @@
   color: #a1a1aa;
 }
 
-.countryCodeInput {
-  width: 100%;
-  padding: 0.7rem 0.875rem;
-  border: 1px solid #e5e5e5;
-  border-radius: 7px;
+.countryPrefix {
+  position: absolute;
+  left: 2.5rem;
+  top: 50%;
+  transform: translateY(-50%);
   font-size: 0.9rem;
   font-weight: 600;
-  font-family: inherit;
-  text-align: center;
   color: #111111;
-  background: #ffffff;
-  transition: border-color 0.15s, box-shadow 0.15s;
-  outline: none;
+  pointer-events: none;
+  z-index: 2;
 }
 
-.countryCodeInput:focus {
-  border-color: #111111;
-  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.06);
-}
-
-.countryCodeInput::placeholder {
-  color: #a1a1aa;
-  font-weight: normal;
+.inputWithPrefix {
+  padding-left: 4.1rem;
 }
 
 .inputIcon {
