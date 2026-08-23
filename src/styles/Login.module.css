@@ -351,31 +351,6 @@
   margin-bottom: 1rem !important;
 }
 
-.switchText {
-  font-size: 0.875rem !important;
-  color: #71717a !important;
-  text-align: center !important;
-  margin-top: 1.25rem !important;
-  line-height: 1.5 !important;
-}
-
-.switchButton {
-  background: none;
-  border: none;
-  color: #111111;
-  font-weight: 600;
-  font-family: inherit;
-  cursor: pointer;
-  padding: 0;
-  font-size: 0.875rem;
-  text-decoration: underline;
-  text-underline-offset: 2px;
-}
-
-.switchButton:hover {
-  color: #000000;
-}
-
 /* ── Alerts ──────────────────────────────────────────── */
 .errorAlert {
   width: 100%;

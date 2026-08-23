@@ -2,11 +2,8 @@ import { createSlice } from "@reduxjs/toolkit";
 import {
   initializeAuthAsync,
   loginAsync,
-  googleLoginAsync,
   logoutAsync,
   sendOtpAsync,
-  sendRegisterOtpAsync,
-  registerAsync,
 } from "../thunks/authThunks";
 
 const authSlice = createSlice({
@@ -73,23 +70,6 @@ const authSlice = createSlice({
       });
 
     builder
-      .addCase(googleLoginAsync.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(googleLoginAsync.fulfilled, (state, action) => {
-        state.loading = false;
-        state.user = action.payload.user;
-        state.isAuthenticated = true;
-        state.error = null;
-      })
-      .addCase(googleLoginAsync.rejected, (state, action) => {
-        state.loading = false;
-        state.isAuthenticated = false;
-        state.error = action.payload;
-      });
-
-    builder
       .addCase(sendOtpAsync.pending, (state) => {
         state.error = null;
       })
@@ -97,34 +77,6 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(sendOtpAsync.rejected, (state, action) => {
-        state.error = action.payload;
-      });
-
-    builder
-      .addCase(sendRegisterOtpAsync.pending, (state) => {
-        state.error = null;
-      })
-      .addCase(sendRegisterOtpAsync.fulfilled, (state) => {
-        state.error = null;
-      })
-      .addCase(sendRegisterOtpAsync.rejected, (state, action) => {
-        state.error = action.payload;
-      });
-
-    builder
-      .addCase(registerAsync.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(registerAsync.fulfilled, (state, action) => {
-        state.loading = false;
-        state.user = action.payload.user;
-        state.isAuthenticated = true;
-        state.error = null;
-      })
-      .addCase(registerAsync.rejected, (state, action) => {
-        state.loading = false;
-        state.isAuthenticated = false;
         state.error = action.payload;
       });
 

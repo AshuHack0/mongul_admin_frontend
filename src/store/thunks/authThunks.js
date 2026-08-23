@@ -53,33 +53,6 @@ export const sendOtpAsync = createAsyncThunk(
 );
 
 /**
- * Async thunk to send OTP for registration
- * Makes API call to send OTP to the provided phone number for registration
- */
-export const sendRegisterOtpAsync = createAsyncThunk(
-  'auth/sendRegisterOtp',
-  async ({ phone }, { rejectWithValue }) => {
-    try {
-      const response = await publicApi.post(API_V1_ENDPOINTS.SEND_REGISTER_OTP, {
-        phone,
-      });
-
-      const data = response.data;
-
-      return {
-        message: data.message || 'OTP sent successfully',
-      };
-    } catch (error) {
-      console.error('Send Register OTP error:', error);
-      return rejectWithValue(
-        error.response?.data?.message || error.message || 'Failed to send OTP'
-      );
-    }
-  }
-);
-
-
-/**
  * Async thunk to handle login
  * Makes API call to verify OTP and then stores token and user data
  */
@@ -110,80 +83,6 @@ export const loginAsync = createAsyncThunk(
       console.error('Login error:', error);
       return rejectWithValue(
         error.response?.data?.message || error.message || 'Could not connect to server. Please check your internet connection and try again.'
-      );
-    }
-  }
-);
-
-/**
- * Async thunk to handle registration
- * Makes API call to register a new user
- */
-export const registerAsync = createAsyncThunk(
-  'auth/register',
-  async ({ phone, fullName, otp }, { rejectWithValue }) => {
-    try {
-      const response = await publicApi.post(API_V1_ENDPOINTS.REGISTER_VERIFY_OTP, {
-        phone,
-        fullName,
-        otp,
-      });
-
-      const data = response.data;
-
-      if (!data.token || !data.user) {
-        return rejectWithValue(data.message || 'Registration failed');
-      }
-
-      localStorage.setItem('authToken', data.token);
-
-      return {
-        token: data.token,
-        user: data.user,
-        message: data.message || 'Registration successful',
-      };
-    } catch (error) {
-      console.error('Registration error:', error);
-      return rejectWithValue(
-        error.response?.data?.message || error.message || 'Failed to register. Please check your internet connection and try again.'
-      );
-    }
-  }
-);
-
-
-/**
- * Async thunk to handle Google login
- * Makes API call with Google ID token and stores token and user data
- */
-export const googleLoginAsync = createAsyncThunk(
-  'auth/googleLogin',
-  async ({ idToken }, { rejectWithValue }) => {
-    try {
-      const response = await publicApi.post(API_V1_ENDPOINTS.GOOGLE_LOGIN, {
-        idToken,
-        role: 'admin', // Set role to admin for admin frontend Google login
-      });
-
-      const data = response.data;
-
-      if (!data.token || !data.user) {
-        return rejectWithValue(data.message || 'Google login failed');
-      }
-
-      localStorage.setItem('authToken', data.token);
-
-      return {
-        token: data.token,
-        user: data.user,
-        message: data.message || 'Google login successful',
-      };
-    } catch (error) {
-      console.error('Google login error:', error);
-      return rejectWithValue(
-        error.response?.data?.message ||
-          error.message ||
-          'Google login failed. Please try again.'
       );
     }
   }

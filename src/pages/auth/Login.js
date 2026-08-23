@@ -3,46 +3,18 @@ import {
   Box,
   Paper,
   Typography,
-  Alert,
-  Divider
+  Alert
 } from '@mui/material';
 import { Phone } from '@mui/icons-material';
-import { GoogleLogin } from '@react-oauth/google';
 import styles from '../../styles/Login.module.css';
 
-const Login = ({ onSendOTP, onSwitchToRegister, onGoogleLogin }) => {
+const Login = ({ onSendOTP }) => {
   const [countryCode, setCountryCode] = useState('+91');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [googleLoading, setGoogleLoading] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
   const [recentPhone, setRecentPhone] = useState('');
-
-  const handleGoogleSuccess = async (credentialResponse) => {
-    if (!credentialResponse?.credential) {
-      setError('Failed to get Google credentials');
-      return;
-    }
-
-    setGoogleLoading(true);
-    setError('');
-
-    try {
-      const result = await onGoogleLogin(credentialResponse.credential);
-      if (!result?.success) {
-        setError(result?.message || 'Google login failed');
-      }
-    } catch (err) {
-      setError(err?.message || 'Google login failed. Please try again.');
-    } finally {
-      setGoogleLoading(false);
-    }
-  };
-
-  const handleGoogleError = () => {
-    setError('Google sign-in was cancelled or failed');
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -188,7 +160,7 @@ const Login = ({ onSendOTP, onSwitchToRegister, onGoogleLogin }) => {
             <button
               type="submit"
               className={styles.submitButton}
-              disabled={loading || googleLoading}
+              disabled={loading}
             >
               {loading ? (
                 <>
@@ -200,39 +172,9 @@ const Login = ({ onSendOTP, onSwitchToRegister, onGoogleLogin }) => {
               )}
             </button>
 
-            <Box sx={{ my: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
-              <Divider sx={{ flex: 1 }} />
-              <Typography variant="body2" color="text.secondary">
-                OR
-              </Typography>
-              <Divider sx={{ flex: 1 }} />
-            </Box>
-
-            <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
-              <GoogleLogin
-                onSuccess={handleGoogleSuccess}
-                onError={handleGoogleError}
-                disabled={loading || googleLoading}
-                useOneTap={false}
-              />
-            </Box>
-
             <Typography className={styles.consentText}>
               By tapping Send OTP, you agree to receive a one-time SMS to verify your identity.
             </Typography>
-
-            {onSwitchToRegister && (
-              <Typography className={styles.switchText}>
-                Don't have an account?{' '}
-                <button
-                  type="button"
-                  onClick={onSwitchToRegister}
-                  className={styles.switchButton}
-                >
-                  Sign up
-                </button>
-              </Typography>
-            )}
           </Box>
         </Paper>
       </div>
