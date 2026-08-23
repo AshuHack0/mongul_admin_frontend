@@ -14,6 +14,9 @@ import {
   Typography,
 } from "@mui/material";
 
+// Minimum chargeable plan price in USD — mirrors MIN_PLAN_PRICE on the backend.
+export const MIN_PLAN_PRICE = 2;
+
 const KIND_OPTIONS = [
   { value: "SUBSCRIPTION", label: "Subscription" },
   { value: "QUICK_FIX", label: "One-time (Quick Fix)" },
@@ -101,7 +104,8 @@ const PlanFormDialog = ({ open, planForm, onChange, onClose, onSubmit, saving })
                 fullWidth
                 value={planForm.price}
                 onChange={onChange("price")}
-                inputProps={{ step: "0.01", min: "0" }}
+                inputProps={{ step: "0.01", min: String(MIN_PLAN_PRICE) }}
+                helperText={`Minimum $${MIN_PLAN_PRICE}`}
               />
               <TextField
                 select

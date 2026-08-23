@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 import { Alert, Button, CircularProgress, Stack, Typography } from "@mui/material";
 import SideBarLayout from "../layout/SideBarLayout";
 import PlansList from "../components/plans/PlansList";
-import PlanFormDialog from "../components/plans/PlanFormDialog";
+import PlanFormDialog, { MIN_PLAN_PRICE } from "../components/plans/PlanFormDialog";
 import {
   fetchPlansThunk,
   createPlanThunk,
@@ -119,6 +119,12 @@ const Plans = () => {
     }
     if (!features.length) {
       setError("At least one feature is required.");
+      return;
+    }
+
+    const price = Number(planForm.price);
+    if (!Number.isFinite(price) || price < MIN_PLAN_PRICE) {
+      setError(`Price must be at least $${MIN_PLAN_PRICE}.`);
       return;
     }
 
