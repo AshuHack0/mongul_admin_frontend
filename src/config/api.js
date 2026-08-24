@@ -38,6 +38,7 @@ export const API_V1_ENDPOINTS = {
   ADMIN_REVENUE_POLICY: `${API_BASE_URL}/api/v1/admin/revenue-policy`,
   ADMIN_PLATFORM_REVENUE: `${API_BASE_URL}/api/v1/admin/platform-revenue`,
   ADMIN_PLATFORM_REVENUE_TIMESERIES: `${API_BASE_URL}/api/v1/admin/platform-revenue/timeseries`,
+  ADMIN_DASHBOARD_STATS: `${API_BASE_URL}/api/v1/admin/dashboard-stats`,
 
   SURVEYS: `${API_BASE_URL}/api/v1/survey`,
   BLOGS: `${API_BASE_URL}/api/v1/blog`,
