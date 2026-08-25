@@ -393,7 +393,7 @@ const Dashboard = () => {
                                 />
                               </div>
                               <Typography style={{ fontSize: "0.75rem", color: "#71717a", marginTop: 2 }}>
-                                Category: {req?.categoryId?.name || "General"}
+                                Category: {req?.category?.name || "General"}
                               </Typography>
                             </div>
                             <div style={{ textAlign: "right" }}>
