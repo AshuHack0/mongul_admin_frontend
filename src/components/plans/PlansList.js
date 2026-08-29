@@ -94,13 +94,21 @@ const PlansList = ({ plans, togglingPlanId, onToggleActive }) => {
               </Typography>
 
               {/* Meta */}
-              <Stack direction="row" spacing={1.5} flexWrap="wrap">
+              <Stack direction="row" spacing={1.5} flexWrap="wrap" rowGap={0.5}>
                 <Typography style={{ fontSize: "0.775rem", color: "#a1a1aa" }}>
                   Type: {plan.type}
                 </Typography>
                 <Typography style={{ fontSize: "0.775rem", color: "#a1a1aa" }}>
-                  Sessions/cycle: {plan.sessionsPerCycle}
+                  Sessions: {plan.sessionsPerCycle}
                 </Typography>
+                <Typography style={{ fontSize: "0.775rem", color: "#16a34a", fontWeight: 600 }}>
+                  Payout: {formatPrice(plan.mentorPayoutPerSession, plan.currency)}/session
+                </Typography>
+                {plan.rolloverLimit > 0 && (
+                  <Typography style={{ fontSize: "0.775rem", color: "#a1a1aa" }}>
+                    Rollover: {plan.rolloverLimit} (max {plan.maxSessionsAllowed})
+                  </Typography>
+                )}
               </Stack>
 
               {/* isActive toggle */}

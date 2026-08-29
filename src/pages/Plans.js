@@ -3,12 +3,13 @@ import { useDispatch } from "react-redux";
 import { Alert, Button, CircularProgress, Stack, Typography } from "@mui/material";
 import SideBarLayout from "../layout/SideBarLayout";
 import PlansList from "../components/plans/PlansList";
-import PlanFormDialog, { MIN_PLAN_PRICE } from "../components/plans/PlanFormDialog";
+import PlanFormDialog from "../components/plans/PlanFormDialog";
 import {
   fetchPlansThunk,
   createPlanThunk,
   updatePlanThunk,
 } from "../store/thunks/plansThunks";
+import { fetchRevenuePolicyThunk } from "../store/thunks/revenuePolicyThunks";
 
 const DEFAULT_PLAN_FORM = {
   key: "",
@@ -20,6 +21,9 @@ const DEFAULT_PLAN_FORM = {
   billingInterval: "none",
   sessionsPerCycle: "1",
   mentorPayoutPerSession: "",
+  rolloverLimit: "0",
+  maxSessionsAllowed: "1",
+  expiryRolloverInMonths: "",
   features: "",
   isActive: true,
 };
@@ -33,6 +37,11 @@ const Plans = () => {
   const [isPlanModalOpen, setPlanModalOpen] = useState(false);
   const [planForm, setPlanForm] = useState(DEFAULT_PLAN_FORM);
   const [savingPlan, setSavingPlan] = useState(false);
+  const [revenuePolicy, setRevenuePolicy] = useState({
+    mentorSessionSharePercent: 75,
+    platformSessionSharePercent: 25,
+    mentorTipSharePercent: 100,
+  });
 
   const dispatch = useDispatch();
 
@@ -53,7 +62,15 @@ const Plans = () => {
 
   useEffect(() => {
     fetchPlans();
-  }, [fetchPlans]);
+    dispatch(fetchRevenuePolicyThunk())
+      .unwrap()
+      .then((policy) => {
+        if (policy) {
+          setRevenuePolicy(policy);
+        }
+      })
+      .catch(() => {});
+  }, [fetchPlans, dispatch]);
 
   const handleToggleActive = useCallback(
     async (plan, nextIsActive) => {
@@ -96,11 +113,65 @@ const Plans = () => {
 
   const handlePlanInputChange = (field) => (event) => {
     const { value } = event.target;
+    if (field === "kind") {
+      const isSub = value === "SUBSCRIPTION";
+      const sessions = isSub ? 3 : 1;
+      const price = Number(planForm.price);
+      const mentorPercent = revenuePolicy?.mentorSessionSharePercent ?? 75;
+      const payout =
+        Number.isFinite(price) && price > 0
+          ? ((price / sessions) * (mentorPercent / 100)).toFixed(2)
+          : planForm.mentorPayoutPerSession;
+
+      setPlanForm((prev) => ({
+        ...prev,
+        kind: value,
+        billingInterval: isSub ? "month" : "none",
+        sessionsPerCycle: String(sessions),
+        mentorPayoutPerSession: payout,
+        rolloverLimit: isSub ? "1" : "0",
+        maxSessionsAllowed: isSub ? "4" : "1",
+        expiryRolloverInMonths: isSub ? "3" : "",
+      }));
+      return;
+    }
+
+    if (field === "price" || field === "sessionsPerCycle") {
+      const nextPrice = field === "price" ? Number(value) : Number(planForm.price);
+      const nextSessions = field === "sessionsPerCycle" ? Number(value) : Number(planForm.sessionsPerCycle);
+      const mentorPercent = revenuePolicy?.mentorSessionSharePercent ?? 75;
+
+      let nextPayout = planForm.mentorPayoutPerSession;
+      if (Number.isFinite(nextPrice) && nextPrice > 0 && Number.isFinite(nextSessions) && nextSessions > 0) {
+        nextPayout = ((nextPrice / nextSessions) * (mentorPercent / 100)).toFixed(2);
+      }
+
+      setPlanForm((prev) => ({
+        ...prev,
+        [field]: value,
+        mentorPayoutPerSession: nextPayout,
+      }));
+      return;
+    }
+
     setPlanForm((prev) => ({
       ...prev,
       [field]: value,
     }));
   };
+
+  const handleAutoCalculatePayout = useCallback(() => {
+    const price = Number(planForm.price);
+    const sessions = Number(planForm.sessionsPerCycle) || 1;
+    const mentorPercent = revenuePolicy?.mentorSessionSharePercent ?? 75;
+    if (Number.isFinite(price) && price > 0 && sessions > 0) {
+      const calculated = ((price / sessions) * (mentorPercent / 100)).toFixed(2);
+      setPlanForm((prev) => ({
+        ...prev,
+        mentorPayoutPerSession: calculated,
+      }));
+    }
+  }, [planForm.price, planForm.sessionsPerCycle, revenuePolicy]);
 
   const handleSubmitPlan = async (event) => {
     event.preventDefault();
@@ -122,12 +193,6 @@ const Plans = () => {
       return;
     }
 
-    const price = Number(planForm.price);
-    if (!Number.isFinite(price) || price < MIN_PLAN_PRICE) {
-      setError(`Price must be at least $${MIN_PLAN_PRICE}.`);
-      return;
-    }
-
     setSavingPlan(true);
     setError(null);
     setSuccessMessage(null);
@@ -141,9 +206,15 @@ const Plans = () => {
         billingInterval: planForm.billingInterval,
         sessionsPerCycle: planForm.sessionsPerCycle,
         mentorPayoutPerSession: planForm.mentorPayoutPerSession,
+        rolloverLimit: planForm.rolloverLimit === "" ? 0 : planForm.rolloverLimit,
+        maxSessionsAllowed: planForm.maxSessionsAllowed === "" ? 1 : planForm.maxSessionsAllowed,
         features,
         isActive: planForm.isActive,
       };
+
+      if (planForm.expiryRolloverInMonths !== "" && planForm.expiryRolloverInMonths !== null) {
+        payload.expiryRolloverInMonths = planForm.expiryRolloverInMonths;
+      }
 
       if (planForm.displayName.trim()) {
         payload.displayName = planForm.displayName.trim();
@@ -245,7 +316,9 @@ const Plans = () => {
       <PlanFormDialog
         open={isPlanModalOpen}
         planForm={planForm}
+        revenuePolicy={revenuePolicy}
         onChange={handlePlanInputChange}
+        onAutoCalculatePayout={handleAutoCalculatePayout}
         onClose={handleClosePlanModal}
         onSubmit={handleSubmitPlan}
         saving={savingPlan}

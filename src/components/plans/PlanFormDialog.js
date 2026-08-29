@@ -14,9 +14,6 @@ import {
   Typography,
 } from "@mui/material";
 
-// Minimum chargeable plan price in USD — mirrors MIN_PLAN_PRICE on the backend.
-export const MIN_PLAN_PRICE = 2;
-
 const KIND_OPTIONS = [
   { value: "SUBSCRIPTION", label: "Subscription" },
   { value: "QUICK_FIX", label: "One-time (Quick Fix)" },
@@ -32,7 +29,25 @@ const BILLING_INTERVAL_OPTIONS = [
   { value: "month", label: "Monthly" },
 ];
 
-const PlanFormDialog = ({ open, planForm, onChange, onClose, onSubmit, saving }) => {
+const PlanFormDialog = ({
+  open,
+  planForm,
+  revenuePolicy,
+  onChange,
+  onAutoCalculatePayout,
+  onClose,
+  onSubmit,
+  saving,
+}) => {
+  const mentorPercent = revenuePolicy?.mentorSessionSharePercent ?? 75;
+  const platformPercent = revenuePolicy?.platformSessionSharePercent ?? 25;
+  const priceNum = Number(planForm.price);
+  const sessionsNum = Number(planForm.sessionsPerCycle) || 1;
+  const suggestedPayout =
+    Number.isFinite(priceNum) && priceNum > 0
+      ? ((priceNum / sessionsNum) * (mentorPercent / 100)).toFixed(2)
+      : null;
+
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
       <Box component="form" onSubmit={onSubmit}>
@@ -104,8 +119,7 @@ const PlanFormDialog = ({ open, planForm, onChange, onClose, onSubmit, saving })
                 fullWidth
                 value={planForm.price}
                 onChange={onChange("price")}
-                inputProps={{ step: "0.01", min: String(MIN_PLAN_PRICE) }}
-                helperText={`Minimum $${MIN_PLAN_PRICE}`}
+                inputProps={{ step: "0.01" }}
               />
               <TextField
                 select
@@ -140,6 +154,41 @@ const PlanFormDialog = ({ open, planForm, onChange, onClose, onSubmit, saving })
                 value={planForm.mentorPayoutPerSession}
                 onChange={onChange("mentorPayoutPerSession")}
                 inputProps={{ step: "0.01", min: "0" }}
+                helperText={
+                  suggestedPayout
+                    ? `Policy: ${mentorPercent}% mentor ($${suggestedPayout}) / ${platformPercent}% platform`
+                    : `USD mentor earnings (${mentorPercent}% policy share)`
+                }
+              />
+            </Stack>
+
+            <Stack direction={{ xs: "column", sm: "row" }} spacing={2} useFlexGap>
+              <TextField
+                label="Rollover Limit"
+                type="number"
+                fullWidth
+                value={planForm.rolloverLimit}
+                onChange={onChange("rolloverLimit")}
+                inputProps={{ step: "1", min: "0" }}
+                helperText="Max unused sessions to carry over"
+              />
+              <TextField
+                label="Max Sessions Cap"
+                type="number"
+                fullWidth
+                value={planForm.maxSessionsAllowed}
+                onChange={onChange("maxSessionsAllowed")}
+                inputProps={{ step: "1", min: "1" }}
+                helperText="Concurrent sessions cap"
+              />
+              <TextField
+                label="Rollover Expiry (Mo)"
+                type="number"
+                fullWidth
+                value={planForm.expiryRolloverInMonths}
+                onChange={onChange("expiryRolloverInMonths")}
+                inputProps={{ step: "1", min: "1" }}
+                helperText="Months before rollover expires (optional)"
               />
             </Stack>
 
